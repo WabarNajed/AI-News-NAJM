@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>مركز ذكاء السوق | نجم لخدمات التأمين</title>
+<meta name="description" content="مركز الأخبار والإفصاحات المباشر - قسم الخزينة والاستثمار، شركة نجم لخدمات التأمين" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --najm-green: #00A651;
+    --najm-green-dark: #008842;
+    --najm-green-light: #1FBA6A;
+    --najm-green-bg: rgba(0, 166, 81, 0.10);
+    --najm-green-border: rgba(0, 166, 81, 0.25);
+
+    --bg: #F4F6F8;
+    --surface: #FFFFFF;
+    --surface-2: #FAFBFC;
+    --surface-3: #F0F2F5;
+
+    --border: #E1E5EA;
+    --border-strong: #CBD2D9;
+    --border-hover: #00A651;
+
+    --text: #1A2332;
+    --text-2: #4A5568;
+    --text-3: #7B8794;
+    --text-muted: #A0AEC0;
+
+    --positive: #00A651;
+    --positive-bg: rgba(0, 166, 81, 0.08);
+    --negative: #DC2626;
+    --negative-bg: rgba(220, 38, 38, 0.08);
+    --warning: #D97706;
+    --warning-bg: rgba(217, 119, 6, 0.08);
+    --info: #2563EB;
+    --info-bg: rgba(37, 99, 235, 0.08);
+    --neutral: #64748B;
+    --neutral-bg: rgba(100, 116, 139, 0.08);
+
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+  }
+
+  body {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+    font-size: 14px;
+  }
+  .container { max-width: 1320px; margin: 0 auto; }
+
+  .icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.8; fill: none; flex-shrink: 0; }
+  .icon-sm { width: 14px; height: 14px; }
+  .icon-lg { width: 22px; height: 22px; }
+
+  .header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 4px;
+    background: var(--najm-green);
+    border-radius: 0 12px 12px 0;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-wrap { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: var(--najm-green);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 22px;
+    box-shadow: 0 2px 6px rgba(0, 166, 81, 0.25);
+  }
+  .header h1 { font-size: 17px; font-weight: 700; margin-bottom: 3px; color: var(--text); }
+  .header-sub { font-size: 12px; color: var(--text-3); }
+  .header-right { display: flex; align-items: center; gap: 14px; }
+  .live-badge {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--najm-green-bg);
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--najm-green-border);
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--najm-green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1; transform: scale(1);} 50%{opacity:0.5; transform: scale(0.85);} }
+  .live-text { font-size: 11px; font-weight: 700; color: var(--najm-green-dark); letter-spacing: 0.5px; }
+  .clock {
+    font-size: 13px; color: var(--text-2); font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Courier New', monospace; font-weight: 600;
+    padding: 6px 12px; background: var(--surface-3); border-radius: 8px;
+  }
+
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+  }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+  .kpi:hover { border-color: var(--najm-green); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .kpi-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .kpi-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--najm-green-bg); color: var(--najm-green-dark);
+  }
+  .kpi-icon .icon { width: 16px; height: 16px; }
+  .kpi-label { font-size: 11px; color: var(--text-3); letter-spacing: 0.3px; font-weight: 500; }
+  .kpi-value { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); margin-bottom: 4px; }
+  .kpi-value small { font-size: 12px; color: var(--text-3); font-weight: 400; }
+  .kpi-delta { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .kpi-delta.up { color: var(--positive); }
+  .kpi-delta.down { color: var(--negative); }
+  .kpi-delta.neutral { color: var(--text-3); }
+
+  .brief {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-right: 4px solid var(--najm-green);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .brief-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .brief-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 700; color: var(--text);
+  }
+  .brief-title .icon-wrap {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: var(--najm-green-bg); color: var(--najm-green-dark);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brief-badge {
+    background: var(--najm-green-bg); color: var(--najm-green-dark);
+    font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 999px;
+    letter-spacing: 1px; border: 1px solid var(--najm-green-border);
+  }
+  .brief-text { font-size: 13.5px; line-height: 1.85; color: var(--text-2); }
+  .brief-text strong { color: var(--najm-green-dark); font-weight: 700; }
+
+  .tabs {
+    display: flex; gap: 2px; margin-bottom: 16px;
+    background: var(--surface); padding: 4px;
+    border-radius: 10px; border: 1px solid var(--border);
+    overflow-x: auto; scrollbar-width: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    background: transparent; border: none;
+    color: var(--text-2); padding: 10px 18px;
+    font-size: 13px; cursor: pointer; border-radius: 7px;
+    font-family: inherit; font-weight: 500;
+    transition: all 0.2s; white-space: nowrap;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .tab:hover { color: var(--text); background: var(--surface-3); }
+  .tab.active {
+    background: var(--najm-green); color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 166, 81, 0.2);
+  }
+  .tab .icon { width: 15px; height: 15px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px; gap: 12px; flex-wrap: wrap;
+  }
+  .section-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 15px; font-weight: 700; color: var(--text);
+  }
+  .section-title .badge {
+    background: var(--najm-green-bg); color: var(--najm-green-dark);
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    font-weight: 600; border: 1px solid var(--najm-green-border);
+  }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text-2); padding: 6px 14px; border-radius: 999px;
+    font-size: 12px; cursor: pointer; transition: all 0.15s;
+    font-family: inherit; font-weight: 500;
+  }
+  .filter-btn:hover { background: var(--surface-3); color: var(--text); border-color: var(--border-strong); }
+  .filter-btn.active {
+    background: var(--najm-green); color: white;
+    border-color: var(--najm-green); font-weight: 600;
+  }
+
+  .news-list { display: grid; gap: 8px; }
+  .news-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 16px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    text-decoration: none; color: var(--text);
+    transition: all 0.15s;
+  }
+  .news-item:hover {
+    border-color: var(--najm-green); background: var(--surface-2);
+    transform: translateX(-2px); box-shadow: var(--shadow);
+  }
+  .news-tag {
+    font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 6px;
+    flex-shrink: 0; min-width: 60px; text-align: center; letter-spacing: 0.3px;
+  }
+  .tag-najm { background: var(--najm-green-bg); color: var(--najm-green-dark); }
+  .tag-sector { background: var(--info-bg); color: var(--info); }
+  .tag-reg { background: var(--negative-bg); color: var(--negative); }
+  .tag-econ { background: var(--warning-bg); color: var(--warning); }
+  .tag-global { background: var(--neutral-bg); color: var(--neutral); }
+  .tag-company { background: var(--najm-green-bg); color: var(--najm-green-dark); border: 1px solid var(--najm-green-border); }
+  .news-body { flex: 1; min-width: 0; }
+  .news-title {
+    font-size: 13.5px; font-weight: 500; color: var(--text);
+    margin-bottom: 4px; line-height: 1.5;
+  }
+  .news-meta {
+    font-size: 11px; color: var(--text-3);
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .news-meta .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--text-muted); }
+  .news-arrow { color: var(--text-muted); flex-shrink: 0; display: flex; align-items: center; }
+  .news-item:hover .news-arrow { color: var(--najm-green); }
+
+  .loading {
+    text-align: center; padding: 40px 20px; color: var(--text-3); font-size: 13px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .loading-spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid var(--border); border-top-color: var(--najm-green);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin-left: 8px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-state {
+    background: var(--surface); border: 1px solid var(--negative-bg);
+    border-radius: 10px; padding: 24px;
+    text-align: center;
+  }
+  .error-state .icon { width: 36px; height: 36px; color: var(--negative); margin-bottom: 8px; }
+  .error-state-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .error-state-msg { font-size: 12px; color: var(--text-3); margin-bottom: 12px; }
+  .error-state button {
+    background: var(--najm-green); color: white; border: none;
+    padding: 8px 18px; border-radius: 8px; cursor: pointer;
+    font-family: inherit; font-size: 12px; font-weight: 600;
+  }
+
+  .progress-text {
+    font-size: 11px; color: var(--text-3); margin-top: 8px;
+  }
+
+  .table-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .table-scroll { overflow-x: auto; }
+  table.companies {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px; min-width: 800px;
+  }
+  table.companies thead { background: var(--surface-3); }
+  table.companies th {
+    padding: 13px 16px; text-align: right;
+    font-size: 11px; font-weight: 700;
+    color: var(--text-2); letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap; text-transform: uppercase;
+  }
+  table.companies td {
+    padding: 13px 16px; border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  table.companies tbody tr { transition: background 0.15s; cursor: pointer; }
+  table.companies tbody tr:hover { background: var(--surface-2); }
+  table.companies tbody tr:last-child td { border-bottom: none; }
+  .company-name {
+    font-weight: 600; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ticker {
+    font-size: 10px; padding: 3px 7px; border-radius: 5px;
+    background: var(--najm-green-bg); color: var(--najm-green-dark);
+    font-family: 'SF Mono', 'Courier New', monospace; font-weight: 700;
+    border: 1px solid var(--najm-green-border);
+  }
+  .num { font-variant-numeric: tabular-nums; font-family: 'SF Mono', 'Courier New', monospace; color: var(--text-2); }
+  .delta-cell {
+    font-weight: 700; font-variant-numeric: tabular-nums;
+    font-family: 'SF Mono', 'Courier New', monospace;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .delta-cell.up { color: var(--positive); }
+  .delta-cell.down { color: var(--negative); }
+  .delta-cell.flat { color: var(--text-3); }
+  .delta-cell .icon { width: 12px; height: 12px; stroke-width: 2.5; }
+  .row-links { display: flex; gap: 6px; }
+  .row-link {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 7px;
+    background: var(--surface-3); border: 1px solid var(--border);
+    color: var(--text-2); text-decoration: none;
+    transition: all 0.15s;
+  }
+  .row-link:hover { background: var(--najm-green); color: white; border-color: var(--najm-green); }
+  .row-link .icon { width: 14px; height: 14px; }
+
+  .stat-summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+  }
+  .stat-mini {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--najm-green-bg); color: var(--najm-green-dark);
+    flex-shrink: 0;
+  }
+  .stat-text { flex: 1; min-width: 0; }
+  .stat-mini-label { font-size: 11px; color: var(--text-3); margin-bottom: 3px; font-weight: 500; }
+  .stat-mini-value { font-size: 18px; font-weight: 700; color: var(--text); }
+
+  .disclosure-controls {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+    flex-wrap: wrap;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+  }
+  .control-label {
+    font-size: 13px; color: var(--text-2); font-weight: 600;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .select-company {
+    flex: 1; min-width: 220px; max-width: 360px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--text); padding: 9px 12px; border-radius: 8px;
+    font-family: inherit; font-size: 13px;
+    transition: border-color 0.15s;
+  }
+  .select-company:focus { outline: none; border-color: var(--najm-green); }
+  .disclosure-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .disclosure-empty { text-align: center; padding: 60px 20px; color: var(--text-3); }
+  .disclosure-empty .icon { width: 48px; height: 48px; opacity: 0.4; margin-bottom: 12px; stroke-width: 1.2; }
+  .disclosure-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 12px;
+  }
+  .disc-company {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 18px; font-weight: 700; color: var(--text);
+  }
+  .disc-links { display: flex; gap: 7px; flex-wrap: wrap; }
+  .disc-link {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 8px;
+    background: var(--surface-3); border: 1px solid var(--border);
+    color: var(--text-2); text-decoration: none; font-size: 12px;
+    transition: all 0.15s; font-weight: 600;
+  }
+  .disc-link:hover { background: var(--najm-green); color: white; border-color: var(--najm-green); }
+  .disc-link .icon { width: 14px; height: 14px; }
+  .disc-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .disc-stat {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .disc-stat-label { font-size: 11px; color: var(--text-3); margin-bottom: 6px; font-weight: 500; }
+  .disc-stat-value { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; font-family: 'SF Mono', 'Courier New', monospace; }
+
+  .link-section { margin-bottom: 18px; }
+  .link-section-label {
+    font-size: 11px; color: var(--najm-green-dark); font-weight: 700;
+    margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .link-section-label::before {
+    content: ''; width: 3px; height: 14px;
+    background: var(--najm-green); border-radius: 2px;
+  }
+  .link-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 8px;
+  }
+  .link-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 10px;
+    text-decoration: none; color: var(--text);
+    transition: all 0.15s;
+  }
+  .link-card:hover { border-color: var(--najm-green); background: var(--surface-2); box-shadow: var(--shadow); }
+  .lc-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: var(--najm-green-bg); color: var(--najm-green-dark);
+  }
+  .lc-icon .icon { width: 17px; height: 17px; }
+  .lc-text { flex: 1; min-width: 0; }
+  .lc-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
+  .lc-sub { font-size: 11px; color: var(--text-3); }
+
+  .footer {
+    margin-top: 28px; padding: 16px 20px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: var(--text-3); flex-wrap: wrap; gap: 8px;
+  }
+  .refresh-info { display: flex; align-items: center; gap: 12px; }
+  .refresh-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text-2); padding: 7px 14px; border-radius: 8px;
+    font-size: 11px; cursor: pointer; font-family: inherit;
+    transition: all 0.15s; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .refresh-btn:hover { background: var(--najm-green); color: white; border-color: var(--najm-green); }
+  .refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .refresh-btn .icon { width: 13px; height: 13px; }
+
+  .title-icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--najm-green-bg); color: var(--najm-green-dark);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .title-icon .icon { width: 15px; height: 15px; }
+
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    .header { padding: 16px; }
+    .brief { padding: 16px; }
+    .kpi-value { font-size: 20px; }
+    table.companies { font-size: 12px; }
+    table.companies th, table.companies td { padding: 10px 12px; }
+    .disc-company { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <defs>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l3-3 4 4 5-5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trending-up" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 7" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 7 21 7 21 14" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trending-down" viewBox="0 0 24 24"><polyline points="3 7 9 13 13 9 21 17" stroke-linecap="round" stroke-linejoin="round"/><polyline points="14 17 21 17 21 10" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></symbol>
+    <symbol id="i-building" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="6" x2="9" y2="6"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/><path d="M10 22v-4h4v4"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-news" viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2V11a2 2 0 012-2h2"/><line x1="10" y1="6" x2="18" y2="6"/><line x1="10" y1="10" x2="18" y2="10"/><line x1="10" y1="14" x2="18" y2="14"/><line x1="10" y1="18" x2="14" y2="18"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 10h4.5a1.5 1.5 0 010 3H10a1.5 1.5 0 000 3h5" stroke-linecap="round"/></symbol>
+    <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 10l9-6 9 6M5 10v8h14v-8M9 18v-5M12 18v-5M15 18v-5M3 22h18"/></symbol>
+    <symbol id="i-broadcast" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 010 8.49M7.76 16.24a6 6 0 010-8.49M20.49 4.51a10 10 0 010 14.95M3.51 19.46a10 10 0 010-14.95"/></symbol>
+    <symbol id="i-tv" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><polyline points="17 2 12 6 7 2"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v3"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 016.5 2H20v17H6.5a2.5 2.5 0 000 5H20"/></symbol>
+    <symbol id="i-dollar" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007 0l4-4a5 5 0 00-7-7l-2 2"/><path d="M14 11a5 5 0 00-7 0l-4 4a5 5 0 007 7l2-2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></symbol>
+    <symbol id="i-arrow-up-right" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/></symbol>
+    <symbol id="i-rss" viewBox="0 0 24 24"><path d="M4 11a9 9 0 019 9M4 4a16 16 0 0116 16"/><circle cx="5" cy="19" r="1"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z" stroke-linejoin="round"/><path d="M19 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-twitter-x" viewBox="0 0 24 24"><path d="M18 3h3l-7.5 9 8.5 9h-6.5l-5-6.5-6 6.5h-3l8-9.5-8-8.5h6.5l4.5 6 5.5-6z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="9 12 11 14 15 10"/></symbol>
+    <symbol id="i-pie" viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="i-stock-up" viewBox="0 0 24 24"><path d="M3 19h18M5 19V8M9 19V11M13 19V5M17 19V13"/></symbol>
+  </defs>
+</svg>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-wrap">
+        <div class="logo">ن</div>
+        <div>
+          <h1>مركز ذكاء السوق</h1>
+          <div class="header-sub">قسم الخزينة والاستثمار · شركة نجم لخدمات التأمين</div>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span class="live-text">LIVE</span>
+      </div>
+      <span class="clock" id="clock">00:00:00</span>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-header">
+        <div class="kpi-icon"><svg class="icon"><use href="#i-chart"/></svg></div>
+        <div class="kpi-label">مؤشر التأمين (TISI)</div>
+      </div>
+      <div class="kpi-value">8,582.66</div>
+      <div class="kpi-delta up"><svg class="icon icon-sm"><use href="#i-arrow-up"/></svg> 0.42%</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-header">
+        <div class="kpi-icon"><svg class="icon"><use href="#i-pie"/></svg></div>
+        <div class="kpi-label">حجم السوق 2030</div>
+      </div>
+      <div class="kpi-value">80-100<small> مليار ر.س</small></div>
+      <div class="kpi-delta neutral">توقعات الهيئة</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-header">
+        <div class="kpi-icon"><svg class="icon"><use href="#i-check"/></svg></div>
+        <div class="kpi-label">شركات Q1-2026 رابحة</div>
+      </div>
+      <div class="kpi-value" id="kpi-profit">—</div>
+      <div class="kpi-delta neutral">من 24 شركة</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-header">
+        <div class="kpi-icon"><svg class="icon"><use href="#i-shield-check"/></svg></div>
+        <div class="kpi-label">إطار RBC</div>
+      </div>
+      <div class="kpi-value">2027</div>
+      <div class="kpi-delta" style="color: var(--warning);">تطبيق إلزامي</div>
+    </div>
+  </div>
+
+  <div class="brief">
+    <div class="brief-head">
+      <div class="brief-title">
+        <div class="icon-wrap"><svg class="icon"><use href="#i-sparkles"/></svg></div>
+        الملخص التنفيذي · نجم وقطاع التأمين
+      </div>
+      <span class="brief-badge">AI BRIEF</span>
+    </div>
+    <div class="brief-text">
+      أطلقت <strong>نجم</strong> استراتيجية «نهتم» 2025-2030 المتضمنة 20 مبادرة، بحضور رئيس هيئة التأمين، مع تركيز على معاينة الحوادث عن بُعد بالذكاء الاصطناعي. تولّى م. منصور أبوثنين منصب الرئيس التنفيذي في أبريل 2026. نتائج Q1 2026 أظهرت تحوّل <strong>ولاء</strong> و<strong>اتحاد الخليج الأهلية</strong> و<strong>الصقر</strong> للربحية، فيما سجّلت أسيج خسائر متراكمة بـ51.97% من رأس المال. الانتقال الإلزامي لإطار <strong>RBC</strong> في 2027 يمثل أبرز تحول تنظيمي.
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="news"><svg class="icon"><use href="#i-rss"/></svg>الأخبار المباشرة</button>
+    <button class="tab" data-tab="companies"><svg class="icon"><use href="#i-stock-up"/></svg>شركات التأمين</button>
+    <button class="tab" data-tab="disclosures"><svg class="icon"><use href="#i-clipboard"/></svg>الإفصاحات</button>
+    <button class="tab" data-tab="links"><svg class="icon"><use href="#i-link"/></svg>المنصات</button>
+  </div>
+
+  <div class="panel active" id="panel-news">
+    <div class="section-head">
+      <div class="section-title">
+        <div class="title-icon"><svg class="icon"><use href="#i-news"/></svg></div>
+        آخر الأخبار
+        <span class="badge" id="news-count">0</span>
+      </div>
+      <div class="filters">
+        <button class="filter-btn active" data-cat="all">الكل</button>
+        <button class="filter-btn" data-cat="najm">نجم</button>
+        <button class="filter-btn" data-cat="sector">التأمين</button>
+        <button class="filter-btn" data-cat="econ">اقتصاد</button>
+        <button class="filter-btn" data-cat="global">عالمي</button>
+      </div>
+    </div>
+    <div class="news-list" id="news-list">
+      <div class="loading">
+        <span class="loading-spinner"></span>
+        جاري جلب الأخبار المباشرة...
+        <div class="progress-text" id="news-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-companies">
+    <div class="stat-summary">
+      <div class="stat-mini">
+        <div class="stat-icon"><svg class="icon"><use href="#i-building"/></svg></div>
+        <div class="stat-text">
+          <div class="stat-mini-label">إجمالي الشركات</div>
+          <div class="stat-mini-value" id="stat-total">26</div>
+        </div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-icon" style="background: var(--positive-bg); color: var(--positive);"><svg class="icon"><use href="#i-trending-up"/></svg></div>
+        <div class="stat-text">
+          <div class="stat-mini-label">رابحة Q1-2026</div>
+          <div class="stat-mini-value" id="stat-profit">—</div>
+        </div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-icon" style="background: var(--negative-bg); color: var(--negative);"><svg class="icon"><use href="#i-trending-down"/></svg></div>
+        <div class="stat-text">
+          <div class="stat-mini-label">خاسرة Q1-2026</div>
+          <div class="stat-mini-value" id="stat-loss">—</div>
+        </div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-icon"><svg class="icon"><use href="#i-target"/></svg></div>
+        <div class="stat-text">
+          <div class="stat-mini-label">تحوّل إيجابي</div>
+          <div class="stat-mini-value" id="stat-turn">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-title">
+        <div class="title-icon"><svg class="icon"><use href="#i-stock-up"/></svg></div>
+        نتائج Q1-2026 · شركات التأمين
+        <span class="badge">مليون ر.س</span>
+      </div>
+      <div class="filters">
+        <button class="filter-btn active" data-sort="change-desc">الأعلى تغير</button>
+        <button class="filter-btn" data-sort="change-asc">الأقل تغير</button>
+        <button class="filter-btn" data-sort="profit-desc">الأعلى ربحاً</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table class="companies">
+          <thead>
+            <tr>
+              <th>الشركة</th>
+              <th>Q1-2025</th>
+              <th>Q1-2026</th>
+              <th>التغير %</th>
+              <th>تاريخ الإفصاح</th>
+              <th>الروابط</th>
+            </tr>
+          </thead>
+          <tbody id="companies-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-disclosures">
+    <div class="section-head">
+      <div class="section-title">
+        <div class="title-icon"><svg class="icon"><use href="#i-clipboard"/></svg></div>
+        إفصاحات الشركات
+      </div>
+    </div>
+
+    <div class="disclosure-controls">
+      <div class="control-label">
+        <svg class="icon icon-sm"><use href="#i-search"/></svg>
+        اختر الشركة
+      </div>
+      <select id="disclosure-select" class="select-company"></select>
+    </div>
+
+    <div class="disclosure-card" id="disclosure-card">
+      <div class="disclosure-empty">
+        <svg class="icon"><use href="#i-clipboard"/></svg>
+        <div>اختر شركة من القائمة لعرض إفصاحاتها وروابطها وآخر أخبارها</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-links">
+    <div class="link-section">
+      <div class="link-section-label">منصات سعودية</div>
+      <div class="link-grid">
+        <a href="https://www.saudiexchange.sa/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-chart"/></svg></div><div class="lc-text"><div class="lc-title">تداول السعودية</div><div class="lc-sub">السوق المالية</div></div></a>
+        <a href="https://www.argaam.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-trending-up"/></svg></div><div class="lc-text"><div class="lc-title">أرقام</div><div class="lc-sub">المال والأعمال</div></div></a>
+        <a href="https://www.maaal.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-coin"/></svg></div><div class="lc-text"><div class="lc-title">مال</div><div class="lc-sub">صحيفة الأعمال</div></div></a>
+        <a href="https://sabq.org/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-news"/></svg></div><div class="lc-text"><div class="lc-title">سبق</div><div class="lc-sub">أخبار شاملة</div></div></a>
+        <a href="https://www.spa.gov.sa/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-broadcast"/></svg></div><div class="lc-text"><div class="lc-title">واس</div><div class="lc-sub">الأنباء السعودية</div></div></a>
+        <a href="https://www.mediatameen.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-shield"/></svg></div><div class="lc-text"><div class="lc-title">ميديا تأمين</div><div class="lc-sub">بوابة القطاع</div></div></a>
+        <a href="https://www.ia.gov.sa/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-bank"/></svg></div><div class="lc-text"><div class="lc-title">هيئة التأمين</div><div class="lc-sub">المنظم الرسمي</div></div></a>
+        <a href="https://www.sama.gov.sa/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-bank"/></svg></div><div class="lc-text"><div class="lc-title">ساما</div><div class="lc-sub">البنك المركزي</div></div></a>
+      </div>
+    </div>
+
+    <div class="link-section">
+      <div class="link-section-label">منصات عربية</div>
+      <div class="link-grid">
+        <a href="https://www.alarabiya.net/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-tv"/></svg></div><div class="lc-text"><div class="lc-title">العربية</div><div class="lc-sub">قناة إخبارية</div></div></a>
+        <a href="https://www.ekhbariyatv.sa/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-mic"/></svg></div><div class="lc-text"><div class="lc-title">الإخبارية</div><div class="lc-sub">القناة السعودية</div></div></a>
+        <a href="https://www.cnbcarabia.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-chart"/></svg></div><div class="lc-text"><div class="lc-title">CNBC عربية</div><div class="lc-sub">أخبار اقتصادية</div></div></a>
+        <a href="https://www.aljazeera.net/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-news"/></svg></div><div class="lc-text"><div class="lc-title">الجزيرة</div><div class="lc-sub">شبكة أخبار</div></div></a>
+        <a href="https://aawsat.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-book"/></svg></div><div class="lc-text"><div class="lc-title">الشرق الأوسط</div><div class="lc-sub">صحيفة دولية</div></div></a>
+        <a href="https://asharqbusiness.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-chart"/></svg></div><div class="lc-text"><div class="lc-title">الشرق للأعمال</div><div class="lc-sub">بلومبرغ عربي</div></div></a>
+      </div>
+    </div>
+
+    <div class="link-section">
+      <div class="link-section-label">منصات عالمية</div>
+      <div class="link-grid">
+        <a href="https://www.reuters.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-rss"/></svg></div><div class="lc-text"><div class="lc-title">Reuters</div><div class="lc-sub">وكالة رويترز</div></div></a>
+        <a href="https://www.bloomberg.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-trending-up"/></svg></div><div class="lc-text"><div class="lc-title">Bloomberg</div><div class="lc-sub">الأسواق المالية</div></div></a>
+        <a href="https://www.ft.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-news"/></svg></div><div class="lc-text"><div class="lc-title">Financial Times</div><div class="lc-sub">الأعمال البريطانية</div></div></a>
+        <a href="https://www.wsj.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-building"/></svg></div><div class="lc-text"><div class="lc-title">Wall Street Journal</div><div class="lc-sub">وول ستريت</div></div></a>
+        <a href="https://www.cnbc.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-tv"/></svg></div><div class="lc-text"><div class="lc-title">CNBC</div><div class="lc-sub">قناة الأعمال</div></div></a>
+        <a href="https://www.investing.com/" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-dollar"/></svg></div><div class="lc-text"><div class="lc-title">Investing</div><div class="lc-sub">منصة الاستثمار</div></div></a>
+      </div>
+    </div>
+
+    <div class="link-section">
+      <div class="link-section-label">حسابات منصة X</div>
+      <div class="link-grid">
+        <a href="https://x.com/SaudiExchange" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-twitter-x"/></svg></div><div class="lc-text"><div class="lc-title">@SaudiExchange</div><div class="lc-sub">تداول</div></div></a>
+        <a href="https://x.com/argaamplus" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-twitter-x"/></svg></div><div class="lc-text"><div class="lc-title">@argaamplus</div><div class="lc-sub">أرقام بلس</div></div></a>
+        <a href="https://x.com/SAMA_Gov" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-twitter-x"/></svg></div><div class="lc-text"><div class="lc-title">@SAMA_Gov</div><div class="lc-sub">البنك المركزي</div></div></a>
+        <a href="https://x.com/CMA_Gov" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-twitter-x"/></svg></div><div class="lc-text"><div class="lc-title">@CMA_Gov</div><div class="lc-sub">هيئة السوق</div></div></a>
+        <a href="https://x.com/Reuters" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-twitter-x"/></svg></div><div class="lc-text"><div class="lc-title">@Reuters</div><div class="lc-sub">رويترز</div></div></a>
+        <a href="https://x.com/business" target="_blank" rel="noopener" class="link-card"><div class="lc-icon"><svg class="icon"><use href="#i-twitter-x"/></svg></div><div class="lc-text"><div class="lc-title">@business</div><div class="lc-sub">Bloomberg</div></div></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="refresh-info">
+      <span id="last-update">جاري التحميل...</span>
+      <button class="refresh-btn" id="refresh-btn" onclick="loadNews(true)">
+        <svg class="icon"><use href="#i-refresh"/></svg>
+        تحديث الأخبار
+      </button>
+    </div>
+    <div>قسم الخزينة والاستثمار © شركة نجم لخدمات التأمين</div>
+  </div>
+
+</div>
+
+<script>
+const COMPANIES = [
+  { name: "ليفا", en: "LEVA", ticker: "8161", q1_2025: 1.84, q1_2026: 7.23, change: 2.9256, date: "2026-05-05" },
+  { name: "رسن", en: "RASAN", ticker: "9533", q1_2025: 30, q1_2026: 88.3, change: 1.9432, date: "2026-05-04" },
+  { name: "ولاء", en: "WALAA", ticker: "8060", q1_2025: -67.95, q1_2026: 16.18, change: 1.2381, date: "2026-05-04" },
+  { name: "إتحاد الخليج الأهلية", en: "GULF UNION ALAHLIA", ticker: "8030", q1_2025: -39.95, q1_2026: 4.2, change: 1.105, date: "2026-05-05" },
+  { name: "الصقر للتأمين", en: "ALSAGR", ticker: "8180", q1_2025: -17.92, q1_2026: 1.01, change: 1.0561, date: "2026-05-04" },
+  { name: "سلامة", en: "SALAMA", ticker: "8050", q1_2025: -35.42, q1_2026: -3.32, change: 0.9062, date: "2026-05-06" },
+  { name: "جي آي جي", en: "GIG", ticker: "8190", q1_2025: 27.09, q1_2026: 43.74, change: 0.6145, date: "2026-05-06" },
+  { name: "الخليجية العامة", en: "GULF GENERAL", ticker: "8120", q1_2025: -23.78, q1_2026: -14.02, change: 0.4105, date: "2026-05-06" },
+  { name: "الإعادة السعودية", en: "SAUDI RE", ticker: "8200", q1_2025: 35.41, q1_2026: 46.72, change: 0.3196, date: "2026-04-30" },
+  { name: "تكافل الراجحي", en: "AL RAJHI TAKAFUL", ticker: "8230", q1_2025: 90.8, q1_2026: 113.5, change: 0.2501, date: "2026-05-04" },
+  { name: "التعاونية", en: "TAWUNIYA", ticker: "8010", q1_2025: 261.69, q1_2026: 288.08, change: 0.1008, date: "2026-05-06" },
+  { name: "بوبا العربية", en: "BUPA ARABIA", ticker: "8210", q1_2025: 380.23, q1_2026: 387.3, change: 0.0186, date: "2026-04-30" },
+  { name: "تْشب", en: "CHUBB", ticker: "8240", q1_2025: 2.96, q1_2026: 3, change: 0.0118, date: "2026-05-06" },
+  { name: "أمانة للتأمين", en: "AMANA", ticker: "8100", q1_2025: -5.86, q1_2026: -6.29, change: -0.0735, date: "2026-05-06" },
+  { name: "سايكو", en: "SAICO", ticker: "8160", q1_2025: 14.25, q1_2026: 13.09, change: -0.0813, date: "2026-05-06" },
+  { name: "الدرع العربي", en: "ARABIAN SHIELD", ticker: "8070", q1_2025: 6.45, q1_2026: 4.9, change: -0.241, date: "2026-05-04" },
+  { name: "ملاذ للتأمين", en: "MALATH", ticker: "8020", q1_2025: 9.88, q1_2026: 5.48, change: -0.4456, date: "2026-05-06" },
+  { name: "جزيرة تكافل", en: "JAZIRA TAKAFUL", ticker: "8280", q1_2025: 16.11, q1_2026: 7.46, change: -0.5369, date: "2026-05-06" },
+  { name: "عناية", en: "ENAYA", ticker: "8170", q1_2025: 0.51, q1_2026: 0.04, change: -0.9279, date: "2026-05-06" },
+  { name: "أسيج", en: "ACIG", ticker: "8090", q1_2025: 13.95, q1_2026: -17.67, change: -2.2672, date: "2026-05-06" },
+  { name: "الاتحاد", en: "UCA", ticker: "8130", q1_2025: -11.92, q1_2026: -39.57, change: -2.3198, date: "2026-05-05" },
+  { name: "الوطنية", en: "WATANIYA", ticker: "8040", q1_2025: 6.24, q1_2026: -10.21, change: -2.6364, date: "2026-05-06" },
+  { name: "متكاملة", en: "BURUJ", ticker: "8311", q1_2025: 5.8, q1_2026: -10.63, change: -2.8311, date: "2026-05-05" },
+  { name: "التأمين العربية", en: "ARABIA", ticker: "8250", q1_2025: 4.45, q1_2026: -14.8, change: -4.3285, date: "2026-05-06" },
+  { name: "ميدغلف للتأمين", en: "MEDGULF", ticker: "8030", q1_2025: 19.64, q1_2026: null, change: null, date: null },
+  { name: "المتحدة للتأمين", en: "UCA", ticker: "8270", q1_2025: -23.32, q1_2026: null, change: null, date: null }
+];
+
+// قنوات الأخبار: Google News RSS
+const FEEDS = [
+  { query: '"شركة نجم" تأمين', cat: 'najm', label: 'نجم' },
+  { query: 'Najm insurance Saudi', cat: 'najm', label: 'نجم' },
+  { query: 'قطاع التأمين السعودي', cat: 'sector', label: 'القطاع' },
+  { query: 'هيئة التأمين السعودية', cat: 'reg', label: 'تنظيمي' },
+  { query: 'شركات التأمين تداول', cat: 'sector', label: 'القطاع' },
+  { query: 'الاقتصاد السعودي تداول', cat: 'econ', label: 'اقتصاد' },
+  { query: 'البنك المركزي السعودي ساما', cat: 'econ', label: 'اقتصاد' },
+  { query: 'insurance Saudi Arabia', cat: 'global', label: 'عالمي' },
+];
+
+// ============================================================
+// نظام Proxies متعدد: يجرب 4 خدمات بالتوالي
+// لو فشلت كلها، فيه fallback لـ AllOrigins بصيغة raw
+// ============================================================
+const CORS_PROXIES = [
+  // الأكثر استقراراً - يرجع raw XML
+  (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  // بديل ثاني
+  (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  // بديل ثالث - rss2json
+  (url) => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
+  // بديل رابع
+  (url) => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`,
+];
+
+let allNews = [];
+let currentFilter = 'all';
+let currentSort = 'change-desc';
+
+function buildLinks(c) {
+  return {
+    tadawul: `https://www.saudiexchange.sa/wps/portal/saudiexchange/ourmarkets/main-market-watch/!ut/p/z1/?symbol=${c.ticker}`,
+    argaam: `https://www.argaam.com/ar/tag/companyargaam/${c.ticker}`,
+    google: `https://news.google.com/search?q=%22${encodeURIComponent(c.name)}%22+%D8%AA%D8%A3%D9%85%D9%8A%D9%86&hl=ar&gl=SA&ceid=SA:ar`,
+    mubasher: `https://www.mubasher.info/markets/TDWL/stocks/${c.ticker}`,
+    twitter: `https://x.com/search?q=%22${encodeURIComponent(c.name)}%22&src=typed_query`,
+  };
+}
+
+function buildGoogleNewsUrl(query) {
+  return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=ar&gl=SA&ceid=SA:ar`;
+}
+
+function updateClock() {
+  const d = new Date();
+  const h = String(d.getHours()).padStart(2,'0');
+  const m = String(d.getMinutes()).padStart(2,'0');
+  const s = String(d.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function fmtNum(n) {
+  if (n === null || n === undefined) return '—';
+  const sign = n < 0 ? '−' : '';
+  return sign + Math.abs(n).toFixed(2);
+}
+function fmtPct(n) {
+  if (n === null || n === undefined) return '—';
+  const pct = n * 100;
+  return (pct > 0 ? '+' : '') + pct.toFixed(1) + '%';
+}
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('ar-SA');
+}
+function timeAgo(date) {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  if (seconds < 60) return 'قبل لحظات';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `قبل ${minutes} د`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `قبل ${hours} س`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `قبل ${days} يوم`;
+  return new Date(date).toLocaleDateString('ar-SA');
+}
+function decodeHTML(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.innerHTML = str;
+  return (div.textContent || div.innerText || '').trim();
+}
+function extractSource(title) {
+  const match = title.match(/\s-\s([^-]+)$/);
+  return match ? match[1].trim() : '';
+}
+function cleanTitle(title) {
+  return title.replace(/\s-\s([^-]+)$/, '').trim();
+}
+function arrowIcon(direction) {
+  return `<svg class="icon"><use href="#i-arrow-${direction}"/></svg>`;
+}
+
+// ============================================================
+// تحليل XML من Google News RSS بدون مكتبات
+// ============================================================
+function parseRssXML(xmlText) {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlText, 'text/xml');
+    const items = Array.from(doc.querySelectorAll('item')).slice(0, 8);
+    return items.map(item => {
+      const title = item.querySelector('title')?.textContent || '';
+      const link = item.querySelector('link')?.textContent || '';
+      const pubDate = item.querySelector('pubDate')?.textContent || '';
+      return { title: decodeHTML(title), link, pubDate };
+    });
+  } catch (e) {
+    return [];
+  }
+}
+
+// تحليل JSON من rss2json (هيكل مختلف)
+function parseRss2Json(data) {
+  if (data.status !== 'ok' || !data.items) return [];
+  return data.items.slice(0, 8).map(item => ({
+    title: decodeHTML(item.title),
+    link: item.link,
+    pubDate: item.pubDate,
+  }));
+}
+
+// ============================================================
+// محاولة جلب feed عن طريق 4 proxies بالتوالي
+// ============================================================
+async function fetchWithFallback(query, feed) {
+  const newsUrl = buildGoogleNewsUrl(query);
+
+  for (let i = 0; i < CORS_PROXIES.length; i++) {
+    const proxyUrl = CORS_PROXIES[i](newsUrl);
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const res = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) continue;
+
+      const contentType = res.headers.get('content-type') || '';
+      let items = [];
+
+      if (contentType.includes('json') || proxyUrl.includes('rss2json')) {
+        const data = await res.json();
+        items = parseRss2Json(data);
+      } else {
+        const text = await res.text();
+        items = parseRssXML(text);
+      }
+
+      if (items.length > 0) {
+        return items.map(item => ({
+          title: cleanTitle(item.title),
+          source: extractSource(item.title) || feed.label,
+          link: item.link,
+          pubDate: item.pubDate,
+          cat: feed.cat,
+          label: feed.label,
+        }));
+      }
+    } catch (e) {
+      // اطلع تجربه التالي
+      continue;
+    }
+  }
+  return [];
+}
+
+function renderCompanyStats() {
+  const valid = COMPANIES.filter(c => c.q1_2026 !== null);
+  const profit = valid.filter(c => c.q1_2026 > 0).length;
+  const loss = valid.filter(c => c.q1_2026 < 0).length;
+  const turnaround = valid.filter(c => c.q1_2025 < 0 && c.q1_2026 > 0).length;
+
+  document.getElementById('kpi-profit').textContent = profit;
+  document.getElementById('stat-total').textContent = COMPANIES.length;
+  document.getElementById('stat-profit').textContent = profit;
+  document.getElementById('stat-loss').textContent = loss;
+  document.getElementById('stat-turn').textContent = turnaround;
+}
+
+function renderCompaniesTable() {
+  let data = [...COMPANIES];
+  if (currentSort === 'change-desc') {
+    data.sort((a, b) => (b.change ?? -Infinity) - (a.change ?? -Infinity));
+  } else if (currentSort === 'change-asc') {
+    data.sort((a, b) => (a.change ?? Infinity) - (b.change ?? Infinity));
+  } else if (currentSort === 'profit-desc') {
+    data.sort((a, b) => (b.q1_2026 ?? -Infinity) - (a.q1_2026 ?? -Infinity));
+  }
+
+  const tbody = document.getElementById('companies-tbody');
+  tbody.innerHTML = data.map(c => {
+    const links = buildLinks(c);
+    const deltaClass = c.change === null ? 'flat' : c.change > 0 ? 'up' : c.change < 0 ? 'down' : 'flat';
+    const profitClass = c.q1_2026 === null ? '' : c.q1_2026 > 0 ? 'up' : 'down';
+    const arrowSvg = c.change === null ? '' : c.change > 0 ? arrowIcon('up') : arrowIcon('down');
+    return `
+      <tr onclick="selectCompanyInDisclosures('${c.name}')">
+        <td>
+          <div class="company-name">
+            <span>${c.name}</span>
+            <span class="ticker">${c.ticker}</span>
+          </div>
+        </td>
+        <td class="num">${fmtNum(c.q1_2025)}</td>
+        <td><span class="delta-cell ${profitClass}">${fmtNum(c.q1_2026)}</span></td>
+        <td><span class="delta-cell ${deltaClass}">${arrowSvg} ${fmtPct(c.change)}</span></td>
+        <td style="color: var(--text-3); font-size: 12px;">${fmtDate(c.date)}</td>
+        <td>
+          <div class="row-links">
+            <a href="${links.tadawul}" target="_blank" rel="noopener" class="row-link" title="تداول" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-chart"/></svg></a>
+            <a href="${links.argaam}" target="_blank" rel="noopener" class="row-link" title="أرقام" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-trending-up"/></svg></a>
+            <a href="${links.google}" target="_blank" rel="noopener" class="row-link" title="أخبار" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-news"/></svg></a>
+            <a href="${links.twitter}" target="_blank" rel="noopener" class="row-link" title="X" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-twitter-x"/></svg></a>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function populateDisclosureSelect() {
+  const sel = document.getElementById('disclosure-select');
+  sel.innerHTML = '<option value="">— اختر شركة —</option>' +
+    COMPANIES.map((c, i) => `<option value="${i}">${c.name} (${c.ticker})</option>`).join('');
+  sel.addEventListener('change', e => {
+    const idx = e.target.value;
+    if (idx === '') {
+      document.getElementById('disclosure-card').innerHTML =
+        `<div class="disclosure-empty"><svg class="icon"><use href="#i-clipboard"/></svg><div>اختر شركة من القائمة لعرض إفصاحاتها وروابطها وآخر أخبارها</div></div>`;
+      return;
+    }
+    renderDisclosure(COMPANIES[idx]);
+  });
+}
+
+function renderDisclosure(c) {
+  const links = buildLinks(c);
+  document.getElementById('disclosure-card').innerHTML = `
+    <div class="disclosure-header">
+      <div class="disc-company">
+        <span>${c.name}</span>
+        <span class="ticker">${c.ticker}</span>
+      </div>
+      <div class="disc-links">
+        <a href="${links.tadawul}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-chart"/></svg>تداول</a>
+        <a href="${links.argaam}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-trending-up"/></svg>أرقام</a>
+        <a href="${links.mubasher}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-building"/></svg>مباشر</a>
+        <a href="${links.google}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-news"/></svg>أخبار</a>
+        <a href="${links.twitter}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-twitter-x"/></svg>X</a>
+      </div>
+    </div>
+    <div class="disc-stats">
+      <div class="disc-stat">
+        <div class="disc-stat-label">صافي ربح Q1-2025 (مليون ر.س)</div>
+        <div class="disc-stat-value" style="color: ${c.q1_2025 > 0 ? 'var(--positive)' : 'var(--negative)'};">${fmtNum(c.q1_2025)}</div>
+      </div>
+      <div class="disc-stat">
+        <div class="disc-stat-label">صافي ربح Q1-2026 (مليون ر.س)</div>
+        <div class="disc-stat-value" style="color: ${c.q1_2026 === null ? 'var(--text-3)' : c.q1_2026 > 0 ? 'var(--positive)' : 'var(--negative)'};">${fmtNum(c.q1_2026)}</div>
+      </div>
+      <div class="disc-stat">
+        <div class="disc-stat-label">التغير السنوي (YoY)</div>
+        <div class="disc-stat-value" style="color: ${c.change === null ? 'var(--text-3)' : c.change > 0 ? 'var(--positive)' : 'var(--negative)'};">${fmtPct(c.change)}</div>
+      </div>
+      <div class="disc-stat">
+        <div class="disc-stat-label">تاريخ آخر إفصاح</div>
+        <div class="disc-stat-value" style="font-size: 14px; color: var(--text);">${fmtDate(c.date)}</div>
+      </div>
+    </div>
+    <div style="margin-top: 18px;">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--najm-green-dark); margin-bottom: 12px;">
+        <svg class="icon icon-sm"><use href="#i-news"/></svg>
+        آخر أخبار ${c.name}
+      </div>
+      <div id="company-news-list">
+        <div class="loading"><span class="loading-spinner"></span>جلب أخبار ${c.name}...</div>
+      </div>
+    </div>
+  `;
+  fetchCompanyNews(c);
+}
+
+async function fetchCompanyNews(c) {
+  const items = await fetchWithFallback(`"${c.name}" تأمين`, { cat: 'company', label: c.name });
+  if (items.length === 0) {
+    document.getElementById('company-news-list').innerHTML =
+      `<div class="loading">لا توجد أخبار حديثة عن ${c.name}.</div>`;
+    return;
+  }
+  const html = items.slice(0, 5).map(item => `
+    <a href="${item.link}" target="_blank" rel="noopener" class="news-item">
+      <div class="news-tag tag-company">${c.name.length > 10 ? c.name.slice(0, 10) : c.name}</div>
+      <div class="news-body">
+        <div class="news-title">${item.title}</div>
+        <div class="news-meta">
+          <span>${item.source}</span>
+          <span class="dot"></span>
+          <span>${timeAgo(item.pubDate)}</span>
+        </div>
+      </div>
+      <div class="news-arrow"><svg class="icon icon-sm"><use href="#i-arrow-up-right"/></svg></div>
+    </a>
+  `).join('');
+  document.getElementById('company-news-list').innerHTML = `<div class="news-list">${html}</div>`;
+}
+
+window.selectCompanyInDisclosures = function(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab="disclosures"]').classList.add('active');
+  document.getElementById('panel-disclosures').classList.add('active');
+  const idx = COMPANIES.findIndex(c => c.name === name);
+  if (idx >= 0) {
+    document.getElementById('disclosure-select').value = idx;
+    renderDisclosure(COMPANIES[idx]);
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function dedupe(items) {
+  const seen = new Set();
+  return items.filter(i => {
+    const key = i.title.toLowerCase().slice(0, 60);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function renderNews() {
+  const list = document.getElementById('news-list');
+  const filtered = currentFilter === 'all' ? allNews : allNews.filter(n => n.cat === currentFilter);
+  document.getElementById('news-count').textContent = filtered.length;
+
+  if (filtered.length === 0 && allNews.length === 0) {
+    list.innerHTML = `
+      <div class="error-state">
+        <svg class="icon"><use href="#i-alert"/></svg>
+        <div class="error-state-title">تعذّر جلب الأخبار حالياً</div>
+        <div class="error-state-msg">خدمات تحميل الأخبار المجانية قد تكون مشغولة. جرّب التحديث بعد قليل أو افتح المنصات مباشرة من تبويب "المنصات".</div>
+        <button onclick="loadNews(true)">إعادة المحاولة</button>
+      </div>
+    `;
+    return;
+  }
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="loading">لا توجد أخبار في هذا التصنيف.</div>';
+    return;
+  }
+  list.innerHTML = filtered.slice(0, 40).map(n => `
+    <a href="${n.link}" target="_blank" rel="noopener" class="news-item">
+      <div class="news-tag tag-${n.cat}">${n.label}</div>
+      <div class="news-body">
+        <div class="news-title">${n.title}</div>
+        <div class="news-meta">
+          <span>${n.source}</span>
+          <span class="dot"></span>
+          <span>${timeAgo(n.pubDate)}</span>
+        </div>
+      </div>
+      <div class="news-arrow"><svg class="icon icon-sm"><use href="#i-arrow-up-right"/></svg></div>
+    </a>
+  `).join('');
+}
+
+async function loadNews(manual = false) {
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.disabled = true;
+  if (manual) {
+    document.getElementById('news-list').innerHTML =
+      '<div class="loading"><span class="loading-spinner"></span>جاري تحديث الأخبار...<div class="progress-text" id="news-progress"></div></div>';
+  }
+
+  // جلب الـ feeds واحد ورا الثاني (مو متوازي عشان ما نضرب الـ proxies)
+  const progress = document.getElementById('news-progress');
+  const results = [];
+  for (let i = 0; i < FEEDS.length; i++) {
+    if (progress) progress.textContent = `جلب ${i + 1} من ${FEEDS.length}...`;
+    const items = await fetchWithFallback(FEEDS[i].query, FEEDS[i]);
+    results.push(...items);
+    // عرض تدريجي للنتائج (live)
+    if (results.length > 0 && i < FEEDS.length - 1) {
+      allNews = dedupe([...results]).sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+      renderNews();
+    }
+  }
+
+  let all = dedupe(results);
+  all.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+  allNews = all;
+  renderNews();
+
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  if (allNews.length > 0) {
+    document.getElementById('last-update').textContent =
+      `آخر تحديث: ${hh}:${mm} · ${allNews.length} خبر`;
+  } else {
+    document.getElementById('last-update').textContent = 'تعذّر التحميل';
+  }
+  if (btn) btn.disabled = false;
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+document.querySelectorAll('#panel-news .filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#panel-news .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.cat;
+    renderNews();
+  });
+});
+
+document.querySelectorAll('#panel-companies .filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#panel-companies .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentSort = btn.dataset.sort;
+    renderCompaniesTable();
+  });
+});
+
+renderCompanyStats();
+renderCompaniesTable();
+populateDisclosureSelect();
+loadNews();
+setInterval(() => loadNews(false), 5 * 60 * 1000);
+</script>
+</body>
+</html>
