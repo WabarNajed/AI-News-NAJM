@@ -4,5 +4,5 @@ export default async function handler(request, response) {
   const payload = await loadProfiles('financials');
   response.setHeader('CDN-Cache-Control', 'public, s-maxage=21600, stale-while-revalidate=86400');
   response.setHeader('Cache-Control', 'public, s-maxage=21600, stale-while-revalidate=86400');
-  return response.status(200).json({ ...payload, companies: payload.companies.map(({ symbol, company, annual, quarterly, parsingError }) => ({ symbol, company, annual, quarterly, ...(parsingError ? { parsingError } : {}) })) });
+  return response.status(200).json({ ...payload, companies: payload.companies.map(({ symbol, company, annual, quarterly, periods, parsingError }) => ({ symbol, company, annual, quarterly, periods, ...(parsingError ? { parsingError } : {}) })) });
 }
