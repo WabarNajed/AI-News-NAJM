@@ -583,8 +583,8 @@
       </div>
       <span class="brief-badge">AI BRIEF</span>
     </div>
-    <div class="brief-text">
-      أطلقت <strong>نجم</strong> استراتيجية «نهتم» 2025-2030 المتضمنة 20 مبادرة، بحضور رئيس هيئة التأمين، مع تركيز على معاينة الحوادث عن بُعد بالذكاء الاصطناعي. تولّى م. منصور أبوثنين منصب الرئيس التنفيذي في أبريل 2026. نتائج Q1 2026 أظهرت تحوّل <strong>ولاء</strong> و<strong>اتحاد الخليج الأهلية</strong> و<strong>الصقر</strong> للربحية، فيما سجّلت أسيج خسائر متراكمة بـ51.97% من رأس المال. الانتقال الإلزامي لإطار <strong>RBC</strong> في 2027 يمثل أبرز تحول تنظيمي.
+    <div class="brief-text" id="brief-text" aria-live="polite">
+      جاري إعداد الملخص من أحدث الأخبار...
     </div>
   </div>
 
@@ -832,6 +832,7 @@ const CORS_PROXIES = [
 let allNews = [];
 let currentFilter = 'all';
 let currentSort = 'change-desc';
+let isRefreshing = false;
 
 function buildLinks(c) {
   return {
@@ -887,6 +888,30 @@ function decodeHTML(str) {
   const div = document.createElement('div');
   div.innerHTML = str;
   return (div.textContent || div.innerText || '').trim();
+}
+function escapeHTML(value) {
+  const div = document.createElement('div');
+  div.textContent = value || '';
+  return div.innerHTML;
+}
+
+function renderBrief() {
+  const brief = document.getElementById('brief-text');
+  if (!brief) return;
+
+  const latestByCategory = ['najm', 'sector', 'reg', 'econ']
+    .map(category => allNews.find(item => item.cat === category))
+    .filter(Boolean)
+    .slice(0, 3);
+
+  if (latestByCategory.length === 0) {
+    brief.textContent = 'بانتظار وصول أخبار حديثة لتحديث الملخص التنفيذي تلقائياً.';
+    return;
+  }
+
+  brief.innerHTML = latestByCategory
+    .map(item => `<strong>${escapeHTML(item.label)}:</strong> ${escapeHTML(item.title)}`)
+    .join(' · ');
 }
 function extractSource(title) {
   const match = title.match(/\s-\s([^-]+)$/);
@@ -1098,11 +1123,11 @@ async function fetchCompanyNews(c) {
   }
   const html = items.slice(0, 5).map(item => `
     <a href="${item.link}" target="_blank" rel="noopener" class="news-item">
-      <div class="news-tag tag-company">${c.name.length > 10 ? c.name.slice(0, 10) : c.name}</div>
+      <div class="news-tag tag-company">${escapeHTML(c.name.length > 10 ? c.name.slice(0, 10) : c.name)}</div>
       <div class="news-body">
-        <div class="news-title">${item.title}</div>
+        <div class="news-title">${escapeHTML(item.title)}</div>
         <div class="news-meta">
-          <span>${item.source}</span>
+          <span>${escapeHTML(item.source)}</span>
           <span class="dot"></span>
           <span>${timeAgo(item.pubDate)}</span>
         </div>
@@ -1158,11 +1183,11 @@ function renderNews() {
   }
   list.innerHTML = filtered.slice(0, 40).map(n => `
     <a href="${n.link}" target="_blank" rel="noopener" class="news-item">
-      <div class="news-tag tag-${n.cat}">${n.label}</div>
+      <div class="news-tag tag-${n.cat}">${escapeHTML(n.label)}</div>
       <div class="news-body">
-        <div class="news-title">${n.title}</div>
+        <div class="news-title">${escapeHTML(n.title)}</div>
         <div class="news-meta">
-          <span>${n.source}</span>
+          <span>${escapeHTML(n.source)}</span>
           <span class="dot"></span>
           <span>${timeAgo(n.pubDate)}</span>
         </div>
@@ -1173,42 +1198,44 @@ function renderNews() {
 }
 
 async function loadNews(manual = false) {
+  if (isRefreshing) return;
+  isRefreshing = true;
   const btn = document.getElementById('refresh-btn');
   if (btn) btn.disabled = true;
   if (manual) {
     document.getElementById('news-list').innerHTML =
-      '<div class="loading"><span class="loading-spinner"></span>جاري تحديث الأخبار...<div class="progress-text" id="news-progress"></div></div>';
+      '<div class="loading"><span class="loading-spinner"></span>جاري تحديث الأخبار والملخص...<div class="progress-text" id="news-progress"></div></div>';
   }
 
-  // جلب الـ feeds واحد ورا الثاني (مو متوازي عشان ما نضرب الـ proxies)
-  const progress = document.getElementById('news-progress');
-  const results = [];
-  for (let i = 0; i < FEEDS.length; i++) {
-    if (progress) progress.textContent = `جلب ${i + 1} من ${FEEDS.length}...`;
-    const items = await fetchWithFallback(FEEDS[i].query, FEEDS[i]);
-    results.push(...items);
-    // عرض تدريجي للنتائج (live)
-    if (results.length > 0 && i < FEEDS.length - 1) {
-      allNews = dedupe([...results]).sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-      renderNews();
+  try {
+    // جلب الـ feeds واحد ورا الثاني لتفادي الضغط على خدمات الوساطة.
+    const progress = document.getElementById('news-progress');
+    const results = [];
+    for (let i = 0; i < FEEDS.length; i++) {
+      if (progress) progress.textContent = `جلب ${i + 1} من ${FEEDS.length}...`;
+      const items = await fetchWithFallback(FEEDS[i].query, FEEDS[i]);
+      results.push(...items);
+      if (results.length > 0 && i < FEEDS.length - 1) {
+        allNews = dedupe([...results]).sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        renderNews();
+        renderBrief();
+      }
     }
-  }
 
-  let all = dedupe(results);
-  all.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-  allNews = all;
-  renderNews();
+    allNews = dedupe(results).sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+    renderNews();
+    renderBrief();
 
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2,'0');
-  const mm = String(now.getMinutes()).padStart(2,'0');
-  if (allNews.length > 0) {
-    document.getElementById('last-update').textContent =
-      `آخر تحديث: ${hh}:${mm} · ${allNews.length} خبر`;
-  } else {
-    document.getElementById('last-update').textContent = 'تعذّر التحميل';
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('last-update').textContent = allNews.length > 0
+      ? `آخر تحديث: ${hh}:${mm} · ${allNews.length} خبر`
+      : 'تعذّر التحميل';
+  } finally {
+    isRefreshing = false;
+    if (btn) btn.disabled = false;
   }
-  if (btn) btn.disabled = false;
 }
 
 document.querySelectorAll('.tab').forEach(tab => {
@@ -1243,6 +1270,10 @@ renderCompaniesTable();
 populateDisclosureSelect();
 loadNews();
 setInterval(() => loadNews(false), 5 * 60 * 1000);
+window.addEventListener('online', () => loadNews(false));
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) loadNews(false);
+});
 </script>
 </body>
 </html>
