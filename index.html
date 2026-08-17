@@ -1194,61 +1194,51 @@ document.addEventListener('visibilitychange', () => {
 });
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const IDLE_SCROLL_DELAY = 5000;
-const IDLE_SCROLL_SPEED = 22 / 1000;
-let lastInteraction = performance.now();
-let pageScrollFrame = null;
-let lastScrollFrame = null;
-let bottomReachedAt = null;
-let returningToTop = false;
-let autoScrollInProgress = false;
-function markInteraction() {
-  lastInteraction = performance.now();
-  bottomReachedAt = null;
-  returningToTop = false;
+const AUTO_SCROLL_SPEED = 18 / 1000;
+const MANUAL_SCROLL_DEBOUNCE = 500;
+let autoScrollFrame = null;
+let lastAutoFrame = null;
+let isUserScrolling = false;
+let userScrollTimer = null;
+let autoDirection = 1;
+let autoScrollUntil = 0;
+
+function pauseForManualScroll() {
+  isUserScrolling = true;
+  clearTimeout(userScrollTimer);
+  userScrollTimer = setTimeout(() => { isUserScrolling = false; }, MANUAL_SCROLL_DEBOUNCE);
 }
-// These listeners only record activity. They never prevent native scrolling.
-['pointermove', 'pointerdown', 'wheel', 'touchstart', 'touchmove', 'keydown', 'click'].forEach(event => {
-  window.addEventListener(event, markInteraction, { passive: true });
+
+// Passive listeners preserve native wheel, trackpad, touch, and keyboard scrolling.
+['wheel', 'touchstart', 'touchmove', 'keydown', 'pointerdown'].forEach(event => {
+  window.addEventListener(event, pauseForManualScroll, { passive: true });
 });
-window.addEventListener('scroll', () => { if (!autoScrollInProgress) markInteraction(); }, { passive: true });
-function idlePageScroll(now) {
-  const elapsed = Math.min(now - (lastScrollFrame ?? now), 100);
-  lastScrollFrame = now;
-  const idle = now - lastInteraction >= IDLE_SCROLL_DELAY;
-  if (!reducedMotion && idle && document.visibilityState === 'visible') {
+window.addEventListener('scroll', () => {
+  if (performance.now() > autoScrollUntil) pauseForManualScroll();
+}, { passive: true });
+
+function runAutoScroll(now) {
+  const elapsed = Math.min(now - (lastAutoFrame ?? now), 100);
+  lastAutoFrame = now;
+  if (!reducedMotion && !isUserScrolling && document.visibilityState === 'visible') {
     const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    const distance = IDLE_SCROLL_SPEED * elapsed;
-    if (window.scrollY >= maxY - 1 && !returningToTop) {
-      bottomReachedAt ??= now;
-      if (now - bottomReachedAt >= 3000) returningToTop = true;
-    }
-    if (returningToTop) {
-      autoScrollInProgress = true;
-      window.scrollBy({ top: -distance, behavior: 'auto' });
-      requestAnimationFrame(() => { autoScrollInProgress = false; });
-      if (window.scrollY <= 0) {
-        returningToTop = false;
-        lastInteraction = now + 2000;
-        bottomReachedAt = null;
-      }
-    } else if (!bottomReachedAt) {
-      autoScrollInProgress = true;
-      window.scrollBy({ top: distance, behavior: 'auto' });
-      requestAnimationFrame(() => { autoScrollInProgress = false; });
+    if (maxY > 0) {
+      if (window.scrollY >= maxY - 1) autoDirection = -1;
+      if (window.scrollY <= 0) autoDirection = 1;
+      autoScrollUntil = now + 100;
+      window.scrollBy(0, autoDirection * AUTO_SCROLL_SPEED * elapsed);
     }
   }
-  pageScrollFrame = requestAnimationFrame(idlePageScroll);
+  autoScrollFrame = requestAnimationFrame(runAutoScroll);
 }
-if (!reducedMotion) pageScrollFrame = requestAnimationFrame(idlePageScroll);
+if (!reducedMotion) autoScrollFrame = requestAnimationFrame(runAutoScroll);
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden && pageScrollFrame) {
-    cancelAnimationFrame(pageScrollFrame);
-    pageScrollFrame = null;
-    lastScrollFrame = null;
-  } else if (!document.hidden && !reducedMotion && !pageScrollFrame) {
-    markInteraction();
-    pageScrollFrame = requestAnimationFrame(idlePageScroll);
+  if (document.hidden && autoScrollFrame) {
+    cancelAnimationFrame(autoScrollFrame);
+    autoScrollFrame = null;
+    lastAutoFrame = null;
+  } else if (!document.hidden && !reducedMotion && !autoScrollFrame) {
+    autoScrollFrame = requestAnimationFrame(runAutoScroll);
   }
 });
 </script>
