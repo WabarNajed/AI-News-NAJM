@@ -45,6 +45,12 @@
     --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
   }
 
+  html {
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; }
   body {
     font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
     background: var(--bg);
@@ -670,10 +676,9 @@
           <thead>
             <tr>
               <th>الشركة</th>
-              <th>Q1-2025</th>
-              <th>Q1-2026</th>
-              <th>التغير %</th>
-              <th>تاريخ الإفصاح</th>
+              <th>أحدث قائمة ربع سنوية</th>
+              <th>أحدث قائمة سنوية</th>
+              <th>آخر نتائج مالية</th>
               <th>الروابط</th>
             </tr>
           </thead>
@@ -773,33 +778,10 @@
 </div>
 
 <script>
-const COMPANIES = [
-  { name: "ليفا", en: "LEVA", ticker: "8161", q1_2025: 1.84, q1_2026: 7.23, change: 2.9256, date: "2026-05-05" },
-  { name: "رسن", en: "RASAN", ticker: "9533", q1_2025: 30, q1_2026: 88.3, change: 1.9432, date: "2026-05-04" },
-  { name: "ولاء", en: "WALAA", ticker: "8060", q1_2025: -67.95, q1_2026: 16.18, change: 1.2381, date: "2026-05-04" },
-  { name: "إتحاد الخليج الأهلية", en: "GULF UNION ALAHLIA", ticker: "8030", q1_2025: -39.95, q1_2026: 4.2, change: 1.105, date: "2026-05-05" },
-  { name: "الصقر للتأمين", en: "ALSAGR", ticker: "8180", q1_2025: -17.92, q1_2026: 1.01, change: 1.0561, date: "2026-05-04" },
-  { name: "سلامة", en: "SALAMA", ticker: "8050", q1_2025: -35.42, q1_2026: -3.32, change: 0.9062, date: "2026-05-06" },
-  { name: "جي آي جي", en: "GIG", ticker: "8190", q1_2025: 27.09, q1_2026: 43.74, change: 0.6145, date: "2026-05-06" },
-  { name: "الخليجية العامة", en: "GULF GENERAL", ticker: "8120", q1_2025: -23.78, q1_2026: -14.02, change: 0.4105, date: "2026-05-06" },
-  { name: "الإعادة السعودية", en: "SAUDI RE", ticker: "8200", q1_2025: 35.41, q1_2026: 46.72, change: 0.3196, date: "2026-04-30" },
-  { name: "تكافل الراجحي", en: "AL RAJHI TAKAFUL", ticker: "8230", q1_2025: 90.8, q1_2026: 113.5, change: 0.2501, date: "2026-05-04" },
-  { name: "التعاونية", en: "TAWUNIYA", ticker: "8010", q1_2025: 261.69, q1_2026: 288.08, change: 0.1008, date: "2026-05-06" },
-  { name: "بوبا العربية", en: "BUPA ARABIA", ticker: "8210", q1_2025: 380.23, q1_2026: 387.3, change: 0.0186, date: "2026-04-30" },
-  { name: "تْشب", en: "CHUBB", ticker: "8240", q1_2025: 2.96, q1_2026: 3, change: 0.0118, date: "2026-05-06" },
-  { name: "أمانة للتأمين", en: "AMANA", ticker: "8100", q1_2025: -5.86, q1_2026: -6.29, change: -0.0735, date: "2026-05-06" },
-  { name: "سايكو", en: "SAICO", ticker: "8160", q1_2025: 14.25, q1_2026: 13.09, change: -0.0813, date: "2026-05-06" },
-  { name: "الدرع العربي", en: "ARABIAN SHIELD", ticker: "8070", q1_2025: 6.45, q1_2026: 4.9, change: -0.241, date: "2026-05-04" },
-  { name: "ملاذ للتأمين", en: "MALATH", ticker: "8020", q1_2025: 9.88, q1_2026: 5.48, change: -0.4456, date: "2026-05-06" },
-  { name: "جزيرة تكافل", en: "JAZIRA TAKAFUL", ticker: "8280", q1_2025: 16.11, q1_2026: 7.46, change: -0.5369, date: "2026-05-06" },
-  { name: "عناية", en: "ENAYA", ticker: "8170", q1_2025: 0.51, q1_2026: 0.04, change: -0.9279, date: "2026-05-06" },
-  { name: "أسيج", en: "ACIG", ticker: "8090", q1_2025: 13.95, q1_2026: -17.67, change: -2.2672, date: "2026-05-06" },
-  { name: "الاتحاد", en: "UCA", ticker: "8130", q1_2025: -11.92, q1_2026: -39.57, change: -2.3198, date: "2026-05-05" },
-  { name: "الوطنية", en: "WATANIYA", ticker: "8040", q1_2025: 6.24, q1_2026: -10.21, change: -2.6364, date: "2026-05-06" },
-  { name: "متكاملة", en: "BURUJ", ticker: "8311", q1_2025: 5.8, q1_2026: -10.63, change: -2.8311, date: "2026-05-05" },
-  { name: "التأمين العربية", en: "ARABIA", ticker: "8250", q1_2025: 4.45, q1_2026: -14.8, change: -4.3285, date: "2026-05-06" },
-  { name: "ميدغلف للتأمين", en: "MEDGULF", ticker: "8030", q1_2025: 19.64, q1_2026: null, change: null, date: null },
-  { name: "المتحدة للتأمين", en: "UCA", ticker: "8270", q1_2025: -23.32, q1_2026: null, change: null, date: null }
+const INSURANCE_SYMBOLS = [
+  '8010', '8012', '8020', '8030', '8040', '8050', '8060', '8070', '8100',
+  '8120', '8150', '8160', '8170', '8180', '8190', '8200', '8210', '8230',
+  '8240', '8250', '8260', '8280', '8300', '8310', '8311'
 ];
 
 // قنوات الأخبار: Google News RSS
@@ -833,6 +815,7 @@ let allNews = [];
 let currentFilter = 'all';
 let currentSort = 'change-desc';
 let isRefreshing = false;
+let marketCompanies = [];
 
 function buildLinks(c) {
   return {
@@ -998,157 +981,125 @@ async function fetchWithFallback(query, feed) {
   return [];
 }
 
-function renderCompanyStats() {
-  const valid = COMPANIES.filter(c => c.q1_2026 !== null);
-  const profit = valid.filter(c => c.q1_2026 > 0).length;
-  const loss = valid.filter(c => c.q1_2026 < 0).length;
-  const turnaround = valid.filter(c => c.q1_2025 < 0 && c.q1_2026 > 0).length;
+let tadawulAnnouncements = new Map();
+let tadawulFinancials = new Map();
+let tadawulAnnouncementsMeta = null;
+let tadawulFinancialsMeta = null;
 
-  document.getElementById('kpi-profit').textContent = profit;
-  document.getElementById('stat-total').textContent = COMPANIES.length;
-  document.getElementById('stat-profit').textContent = profit;
-  document.getElementById('stat-loss').textContent = loss;
-  document.getElementById('stat-turn').textContent = turnaround;
+function formatSourceStatus(payload) {
+  const checked = payload?.lastChecked ? fmtDate(payload.lastChecked) : '—';
+  const successful = payload?.lastSuccessfulUpdate ? fmtDate(payload.lastSuccessfulUpdate) : '—';
+  return `المصدر: Saudi Exchange · آخر فحص: ${checked} · آخر تحديث ناجح: ${successful}${payload?.stale ? ' · بيانات مخزنة مؤقتاً' : ''}`;
 }
-
+function companyRecord(symbol) {
+  const announcement = tadawulAnnouncements.get(symbol) || {};
+  const financial = tadawulFinancials.get(symbol) || {};
+  return { symbol, company: announcement.company || financial.company || symbol, announcements: announcement.announcements || [], annual: financial.annual || [], quarterly: financial.quarterly || [], parsingError: announcement.parsingError || financial.parsingError };
+}
+function latestStatement(statements) {
+  return (statements || []).find(statement => statement?.rows?.length) || null;
+}
+function latestResultAnnouncement(company) {
+  return company.announcements.find(item => item.isFinancialResults) || null;
+}
+function metric(statement, patterns) {
+  if (!statement) return null;
+  return statement.rows.find(row => patterns.some(pattern => pattern.test(row.label))) || null;
+}
+function valueWithUnit(row, statement) {
+  if (!row || row.value === null || row.value === undefined) return '—';
+  return `${row.value}${statement?.unit ? ` ${statement.unit}` : ''}${statement?.currency ? ` ${statement.currency}` : ''}`;
+}
+function renderCompanyStats() {
+  const records = INSURANCE_SYMBOLS.map(companyRecord);
+  document.getElementById('kpi-profit').textContent = records.filter(record => latestResultAnnouncement(record)).length;
+  document.getElementById('stat-total').textContent = records.length;
+  document.getElementById('stat-profit').textContent = records.filter(record => latestStatement(record.quarterly)).length;
+  document.getElementById('stat-loss').textContent = records.filter(record => latestStatement(record.annual)).length;
+  document.getElementById('stat-turn').textContent = records.filter(record => record.announcements.length).length;
+}
 function renderCompaniesTable() {
-  let data = [...COMPANIES];
-  if (currentSort === 'change-desc') {
-    data.sort((a, b) => (b.change ?? -Infinity) - (a.change ?? -Infinity));
-  } else if (currentSort === 'change-asc') {
-    data.sort((a, b) => (a.change ?? Infinity) - (b.change ?? Infinity));
-  } else if (currentSort === 'profit-desc') {
-    data.sort((a, b) => (b.q1_2026 ?? -Infinity) - (a.q1_2026 ?? -Infinity));
-  }
-
+  const records = INSURANCE_SYMBOLS.map(companyRecord);
   const tbody = document.getElementById('companies-tbody');
-  tbody.innerHTML = data.map(c => {
-    const links = buildLinks(c);
-    const deltaClass = c.change === null ? 'flat' : c.change > 0 ? 'up' : c.change < 0 ? 'down' : 'flat';
-    const profitClass = c.q1_2026 === null ? '' : c.q1_2026 > 0 ? 'up' : 'down';
-    const arrowSvg = c.change === null ? '' : c.change > 0 ? arrowIcon('up') : arrowIcon('down');
-    return `
-      <tr onclick="selectCompanyInDisclosures('${c.name}')">
-        <td>
-          <div class="company-name">
-            <span>${c.name}</span>
-            <span class="ticker">${c.ticker}</span>
-          </div>
-        </td>
-        <td class="num">${fmtNum(c.q1_2025)}</td>
-        <td><span class="delta-cell ${profitClass}">${fmtNum(c.q1_2026)}</span></td>
-        <td><span class="delta-cell ${deltaClass}">${arrowSvg} ${fmtPct(c.change)}</span></td>
-        <td style="color: var(--text-3); font-size: 12px;">${fmtDate(c.date)}</td>
-        <td>
-          <div class="row-links">
-            <a href="${links.tadawul}" target="_blank" rel="noopener" class="row-link" title="تداول" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-chart"/></svg></a>
-            <a href="${links.argaam}" target="_blank" rel="noopener" class="row-link" title="أرقام" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-trending-up"/></svg></a>
-            <a href="${links.google}" target="_blank" rel="noopener" class="row-link" title="أخبار" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-news"/></svg></a>
-            <a href="${links.twitter}" target="_blank" rel="noopener" class="row-link" title="X" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-twitter-x"/></svg></a>
-          </div>
-        </td>
-      </tr>
-    `;
+  tbody.innerHTML = records.map(record => {
+    const quarterly = latestStatement(record.quarterly);
+    const annual = latestStatement(record.annual);
+    const result = latestResultAnnouncement(record);
+    const profile = `https://www.saudiexchange.sa/wps/portal/saudiexchange/hidden/company-profile-main/?companySymbol=${encodeURIComponent(record.symbol)}`;
+    return `<tr onclick="selectCompanyInDisclosures('${record.symbol}')">
+      <td><div class="company-name"><span>${escapeHTML(record.company)}</span><span class="ticker">${escapeHTML(record.symbol)}</span></div></td>
+      <td class="num">${escapeHTML(quarterly?.period || '—')}</td>
+      <td class="num">${escapeHTML(annual?.period || '—')}</td>
+      <td style="color: var(--text-3); font-size: 12px;">${escapeHTML(result?.publishedAt ? fmtDate(result.publishedAt) : '—')}</td>
+      <td><div class="row-links"><a href="${profile}" target="_blank" rel="noopener" class="row-link" title="Saudi Exchange" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-chart"/></svg></a></div></td>
+    </tr>`;
   }).join('');
 }
-
 function populateDisclosureSelect() {
   const sel = document.getElementById('disclosure-select');
-  sel.innerHTML = '<option value="">— اختر شركة —</option>' +
-    COMPANIES.map((c, i) => `<option value="${i}">${c.name} (${c.ticker})</option>`).join('');
-  sel.addEventListener('change', e => {
-    const idx = e.target.value;
-    if (idx === '') {
-      document.getElementById('disclosure-card').innerHTML =
-        `<div class="disclosure-empty"><svg class="icon"><use href="#i-clipboard"/></svg><div>اختر شركة من القائمة لعرض إفصاحاتها وروابطها وآخر أخبارها</div></div>`;
+  sel.innerHTML = '<option value="">— اختر شركة —</option>' + INSURANCE_SYMBOLS.map(symbol => {
+    const record = companyRecord(symbol);
+    return `<option value="${symbol}">${escapeHTML(record.company)} (${symbol})</option>`;
+  }).join('');
+  sel.addEventListener('change', event => {
+    if (!event.target.value) {
+      document.getElementById('disclosure-card').innerHTML = '<div class="disclosure-empty"><svg class="icon"><use href="#i-clipboard"/></svg><div>اختر شركة لعرض إفصاحاتها وقوائمها من Saudi Exchange</div></div>';
       return;
     }
-    renderDisclosure(COMPANIES[idx]);
+    renderDisclosure(companyRecord(event.target.value));
   });
 }
-
-function renderDisclosure(c) {
-  const links = buildLinks(c);
+function financialRows(statement) {
+  if (!statement) return '<div class="loading">لا توجد قائمة منشورة حالياً.</div>';
+  return `<div class="disc-stat-label">${escapeHTML(statement.statement)} · ${escapeHTML(statement.period || '—')}</div><div class="table-scroll"><table class="companies"><tbody>${statement.rows.map(row => `<tr><td>${escapeHTML(row.label)}</td><td class="num">${escapeHTML(valueWithUnit(row, statement))}</td>${row.comparableValue !== null && row.comparableValue !== undefined ? `<td class="num">${escapeHTML(String(row.comparableValue))}</td>` : ''}</tr>`).join('')}</tbody></table></div>`;
+}
+function renderDisclosure(record) {
+  const quarterly = latestStatement(record.quarterly);
+  const annual = latestStatement(record.annual);
+  const income = [quarterly, annual].find(statement => /income/i.test(statement?.statement || '')) || quarterly || annual;
+  const balance = [quarterly, annual].find(statement => /balance/i.test(statement?.statement || ''));
+  const revenue = metric(income, [/revenue/i, /sales/i, /operating income/i]);
+  const profit = metric(income, [/net profit/i, /net income/i, /profit \(loss\)/i]);
+  const eps = metric(income, [/per share/i, /eps/i]);
+  const assets = metric(balance, [/total assets/i]);
+  const liabilities = metric(balance, [/total liabilities/i]);
+  const equity = metric(balance, [/equity/i]);
+  const latest = record.announcements.slice(0, 8);
   document.getElementById('disclosure-card').innerHTML = `
-    <div class="disclosure-header">
-      <div class="disc-company">
-        <span>${c.name}</span>
-        <span class="ticker">${c.ticker}</span>
-      </div>
-      <div class="disc-links">
-        <a href="${links.tadawul}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-chart"/></svg>تداول</a>
-        <a href="${links.argaam}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-trending-up"/></svg>أرقام</a>
-        <a href="${links.mubasher}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-building"/></svg>مباشر</a>
-        <a href="${links.google}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-news"/></svg>أخبار</a>
-        <a href="${links.twitter}" target="_blank" rel="noopener" class="disc-link"><svg class="icon"><use href="#i-twitter-x"/></svg>X</a>
-      </div>
-    </div>
+    <div class="disclosure-header"><div class="disc-company"><span>${escapeHTML(record.company)}</span><span class="ticker">${escapeHTML(record.symbol)}</span></div><div class="disc-links"><span class="disc-link">${escapeHTML(formatSourceStatus(tadawulAnnouncementsMeta))}</span></div></div>
+    ${record.parsingError ? `<div class="error-state"><div class="error-state-title">تعذر تحليل بيانات هذه الشركة</div><div class="error-state-msg">${escapeHTML(record.parsingError)}</div></div>` : ''}
     <div class="disc-stats">
-      <div class="disc-stat">
-        <div class="disc-stat-label">صافي ربح Q1-2025 (مليون ر.س)</div>
-        <div class="disc-stat-value" style="color: ${c.q1_2025 > 0 ? 'var(--positive)' : 'var(--negative)'};">${fmtNum(c.q1_2025)}</div>
-      </div>
-      <div class="disc-stat">
-        <div class="disc-stat-label">صافي ربح Q1-2026 (مليون ر.س)</div>
-        <div class="disc-stat-value" style="color: ${c.q1_2026 === null ? 'var(--text-3)' : c.q1_2026 > 0 ? 'var(--positive)' : 'var(--negative)'};">${fmtNum(c.q1_2026)}</div>
-      </div>
-      <div class="disc-stat">
-        <div class="disc-stat-label">التغير السنوي (YoY)</div>
-        <div class="disc-stat-value" style="color: ${c.change === null ? 'var(--text-3)' : c.change > 0 ? 'var(--positive)' : 'var(--negative)'};">${fmtPct(c.change)}</div>
-      </div>
-      <div class="disc-stat">
-        <div class="disc-stat-label">تاريخ آخر إفصاح</div>
-        <div class="disc-stat-value" style="font-size: 14px; color: var(--text);">${fmtDate(c.date)}</div>
-      </div>
+      ${[['الإيرادات', revenue, income], ['صافي الربح', profit, income], ['إجمالي الأصول', assets, balance], ['إجمالي الالتزامات', liabilities, balance], ['حقوق المساهمين', equity, balance], ['ربحية السهم', eps, income]].map(([label, row, statement]) => `<div class="disc-stat"><div class="disc-stat-label">${label}</div><div class="disc-stat-value">${escapeHTML(valueWithUnit(row, statement))}</div></div>`).join('')}
     </div>
-    <div style="margin-top: 18px;">
-      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--najm-green-dark); margin-bottom: 12px;">
-        <svg class="icon icon-sm"><use href="#i-news"/></svg>
-        آخر أخبار ${c.name}
-      </div>
-      <div id="company-news-list">
-        <div class="loading"><span class="loading-spinner"></span>جلب أخبار ${c.name}...</div>
-      </div>
-    </div>
-  `;
-  fetchCompanyNews(c);
+    <div style="margin-top:18px"><div class="disc-stat-label">أحدث الإفصاحات · Saudi Exchange</div><div class="news-list">${latest.length ? latest.map(item => `<a href="${escapeHTML(item.url)}" target="_blank" rel="noopener" class="news-item"><div class="news-tag tag-sector">${item.isFinancialResults ? 'نتائج' : 'إفصاح'}</div><div class="news-body"><div class="news-title">${escapeHTML(item.title)}</div><div class="news-meta"><span>Saudi Exchange</span><span class="dot"></span><span>${escapeHTML(item.publishedAt ? fmtDate(item.publishedAt) : '—')}</span></div></div></a>`).join('') : '<div class="loading">لا توجد إفصاحات متاحة.</div>'}</div></div>
+    <div style="margin-top:18px"><div class="disc-stat-label">أحدث قائمة ربع سنوية</div>${financialRows(quarterly)}</div>
+    <div style="margin-top:18px"><div class="disc-stat-label">أحدث قائمة سنوية</div>${financialRows(annual)}</div>`;
 }
-
-async function fetchCompanyNews(c) {
-  const items = await fetchWithFallback(`"${c.name}" تأمين`, { cat: 'company', label: c.name });
-  if (items.length === 0) {
-    document.getElementById('company-news-list').innerHTML =
-      `<div class="loading">لا توجد أخبار حديثة عن ${c.name}.</div>`;
-    return;
+async function loadTadawulData() {
+  try {
+    const [announcementsResponse, financialsResponse] = await Promise.all([
+      fetch('/api/tadawul-announcements'), fetch('/api/tadawul-financials'),
+    ]);
+    if (!announcementsResponse.ok || !financialsResponse.ok) return;
+    const [announcementsPayload, financialsPayload] = await Promise.all([announcementsResponse.json(), financialsResponse.json()]);
+    tadawulAnnouncementsMeta = announcementsPayload;
+    tadawulFinancialsMeta = financialsPayload;
+    tadawulAnnouncements = new Map((announcementsPayload.companies || []).map(company => [company.symbol, company]));
+    tadawulFinancials = new Map((financialsPayload.companies || []).map(company => [company.symbol, company]));
+    renderCompanyStats(); renderCompaniesTable(); populateDisclosureSelect();
+    const sourceNote = document.getElementById('last-update');
+    if (sourceNote) sourceNote.textContent = formatSourceStatus(announcementsPayload);
+  } catch (error) {
+    // لا نستبدل محتوى الواجهة ببيانات غير مؤكدة عندما يتعذر الوصول إلى Functions.
   }
-  const html = items.slice(0, 5).map(item => `
-    <a href="${item.link}" target="_blank" rel="noopener" class="news-item">
-      <div class="news-tag tag-company">${escapeHTML(c.name.length > 10 ? c.name.slice(0, 10) : c.name)}</div>
-      <div class="news-body">
-        <div class="news-title">${escapeHTML(item.title)}</div>
-        <div class="news-meta">
-          <span>${escapeHTML(item.source)}</span>
-          <span class="dot"></span>
-          <span>${timeAgo(item.pubDate)}</span>
-        </div>
-      </div>
-      <div class="news-arrow"><svg class="icon icon-sm"><use href="#i-arrow-up-right"/></svg></div>
-    </a>
-  `).join('');
-  document.getElementById('company-news-list').innerHTML = `<div class="news-list">${html}</div>`;
 }
-
-window.selectCompanyInDisclosures = function(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+window.selectCompanyInDisclosures = function(symbol) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
   document.querySelector('[data-tab="disclosures"]').classList.add('active');
   document.getElementById('panel-disclosures').classList.add('active');
-  const idx = COMPANIES.findIndex(c => c.name === name);
-  if (idx >= 0) {
-    document.getElementById('disclosure-select').value = idx;
-    renderDisclosure(COMPANIES[idx]);
-  }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('disclosure-select').value = symbol;
+  renderDisclosure(companyRecord(symbol));
 };
 
 function dedupe(items) {
@@ -1269,10 +1220,12 @@ renderCompanyStats();
 renderCompaniesTable();
 populateDisclosureSelect();
 loadNews();
+loadTadawulData();
 setInterval(() => loadNews(false), 5 * 60 * 1000);
+setInterval(loadTadawulData, 10 * 60 * 1000);
 window.addEventListener('online', () => loadNews(false));
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) loadNews(false);
+  if (!document.hidden) { loadNews(false); loadTadawulData(); }
 });
 </script>
 </body>
