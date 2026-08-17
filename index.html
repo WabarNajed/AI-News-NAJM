@@ -1194,30 +1194,63 @@ document.addEventListener('visibilitychange', () => {
 });
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IDLE_SCROLL_DELAY = 5000;
+const IDLE_SCROLL_SPEED = 22 / 1000;
 let lastInteraction = performance.now();
 let pageScrollFrame = null;
+let lastScrollFrame = null;
 let bottomReachedAt = null;
 let returningToTop = false;
-function markInteraction() { lastInteraction = performance.now(); bottomReachedAt = null; returningToTop = false; }
-['pointermove', 'pointerdown', 'wheel', 'touchstart', 'keydown', 'click'].forEach(event => window.addEventListener(event, markInteraction, { passive: true }));
+let autoScrollInProgress = false;
+function markInteraction() {
+  lastInteraction = performance.now();
+  bottomReachedAt = null;
+  returningToTop = false;
+}
+// These listeners only record activity. They never prevent native scrolling.
+['pointermove', 'pointerdown', 'wheel', 'touchstart', 'touchmove', 'keydown', 'click'].forEach(event => {
+  window.addEventListener(event, markInteraction, { passive: true });
+});
+window.addEventListener('scroll', () => { if (!autoScrollInProgress) markInteraction(); }, { passive: true });
 function idlePageScroll(now) {
-  if (!reducedMotion && document.visibilityState === 'visible' && now - lastInteraction >= 5000) {
+  const elapsed = Math.min(now - (lastScrollFrame ?? now), 100);
+  lastScrollFrame = now;
+  const idle = now - lastInteraction >= IDLE_SCROLL_DELAY;
+  if (!reducedMotion && idle && document.visibilityState === 'visible') {
     const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const distance = IDLE_SCROLL_SPEED * elapsed;
     if (window.scrollY >= maxY - 1 && !returningToTop) {
       bottomReachedAt ??= now;
       if (now - bottomReachedAt >= 3000) returningToTop = true;
     }
     if (returningToTop) {
-      window.scrollBy(0, -0.4);
-      if (window.scrollY <= 0) { returningToTop = false; bottomReachedAt = now + 2000; }
-    } else if (!bottomReachedAt || now >= bottomReachedAt) {
-      window.scrollBy(0, 0.35);
+      autoScrollInProgress = true;
+      window.scrollBy({ top: -distance, behavior: 'auto' });
+      requestAnimationFrame(() => { autoScrollInProgress = false; });
+      if (window.scrollY <= 0) {
+        returningToTop = false;
+        lastInteraction = now + 2000;
+        bottomReachedAt = null;
+      }
+    } else if (!bottomReachedAt) {
+      autoScrollInProgress = true;
+      window.scrollBy({ top: distance, behavior: 'auto' });
+      requestAnimationFrame(() => { autoScrollInProgress = false; });
     }
   }
   pageScrollFrame = requestAnimationFrame(idlePageScroll);
 }
 if (!reducedMotion) pageScrollFrame = requestAnimationFrame(idlePageScroll);
-document.addEventListener('visibilitychange', () => { if (document.hidden && pageScrollFrame) { cancelAnimationFrame(pageScrollFrame); pageScrollFrame = null; } else if (!document.hidden && !reducedMotion && !pageScrollFrame) pageScrollFrame = requestAnimationFrame(idlePageScroll); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && pageScrollFrame) {
+    cancelAnimationFrame(pageScrollFrame);
+    pageScrollFrame = null;
+    lastScrollFrame = null;
+  } else if (!document.hidden && !reducedMotion && !pageScrollFrame) {
+    markInteraction();
+    pageScrollFrame = requestAnimationFrame(idlePageScroll);
+  }
+});
 </script>
 </body>
 </html>
