@@ -668,10 +668,15 @@
     <div class="section-head">
       <div class="section-title">
         <div class="title-icon"><svg class="icon"><use href="#i-stock-up"/></svg></div>
-        نتائج Q1-2026 · شركات التأمين
+        <span id="insurance-period-title">نتائج Q2-2026 · شركات التأمين</span>
         <span class="badge">مليون ر.س</span>
       </div>
-      <div class="filters">
+      <div class="filters" id="insurance-period-selector">
+        <button class="filter-btn" data-period="Q1">Q1-2026</button>
+        <button class="filter-btn active" data-period="Q2">Q2-2026</button>
+        <button class="filter-btn" data-period="H1">H1-2026</button>
+      </div>
+      <div class="filters" id="insurance-sort-selector">
         <button class="filter-btn active" data-sort="change-desc">الأعلى تغير</button>
         <button class="filter-btn" data-sort="change-asc">الأقل تغير</button>
         <button class="filter-btn" data-sort="profit-desc">الأعلى ربحاً</button>
@@ -684,9 +689,11 @@
           <thead>
             <tr>
               <th>الشركة</th>
-              <th>صافي ربح Q1-2025<br><span style="font-weight:400;text-transform:none;">(مليون ر.س)</span></th>
-              <th>صافي ربح Q1-2026<br><span style="font-weight:400;text-transform:none;">(مليون ر.س)</span></th>
-              <th>التغير السنوي</th>
+              <th id="period-comparable-header">صافي ربح Q2-2025</th>
+              <th id="period-current-header">صافي ربح Q2-2026</th>
+              <th id="period-yoy-header">التغير السنوي</th>
+              <th id="period-qoq-header">صافي ربح Q1-2026</th>
+              <th id="period-qoq-change-header">التغير الربعي</th>
               <th>تاريخ الإفصاح</th>
               <th>الروابط</th>
             </tr>
@@ -1045,16 +1052,49 @@ function renderCompanyStats() {
   document.getElementById('stat-loss').textContent = valid.filter(c => c.q1_2026 < 0).length;
   document.getElementById('stat-turn').textContent = valid.filter(c => c.q1_2025 < 0 && c.q1_2026 > 0).length;
 }
+let selectedInsurancePeriod = 'Q2';
+function financialStatementFor(record, period) {
+  return record.periods.find(item => item.year === 2026 && item.period === period && /income/i.test(item.statement || ''))
+    || record.periods.find(item => item.year === 2026 && item.period === period)
+    || null;
+}
+function netProfit(statement) {
+  return statement?.rows?.find(row => /net profit|net income|profit \(loss\).*shareholder/i.test(row.label)) || null;
+}
+function safePercent(current, comparable) {
+  const a = Number(current), b = Number(comparable);
+  return Number.isFinite(a) && Number.isFinite(b) && b !== 0 ? ((a - b) / Math.abs(b)) : null;
+}
+function updatePeriodHeaders() {
+  const q2 = selectedInsurancePeriod === 'Q2';
+  const h1 = selectedInsurancePeriod === 'H1';
+  document.getElementById('insurance-period-title').textContent = `نتائج ${selectedInsurancePeriod}-2026 · شركات التأمين`;
+  document.getElementById('period-comparable-header').textContent = `صافي ربح ${selectedInsurancePeriod}-2025`;
+  document.getElementById('period-current-header').textContent = `صافي ربح ${selectedInsurancePeriod}-2026`;
+  document.getElementById('period-yoy-header').textContent = 'التغير السنوي';
+  document.getElementById('period-qoq-header').style.display = q2 ? '' : 'none';
+  document.getElementById('period-qoq-change-header').style.display = q2 ? '' : 'none';
+}
 function renderCompaniesTable() {
+  updatePeriodHeaders();
   const data = [...COMPANIES].sort((a,b) => currentSort === 'change-asc' ? (a.change ?? Infinity)-(b.change ?? Infinity) : currentSort === 'profit-desc' ? (b.q1_2026 ?? -Infinity)-(a.q1_2026 ?? -Infinity) : (b.change ?? -Infinity)-(a.change ?? -Infinity));
-  document.getElementById('companies-tbody').innerHTML = data.map(c => {
-    const record=companyRecord(c.ticker), result=record.announcements.find(item=>item.isFinancialResults);
-    const delta=c.change === null ? '—' : fmtPct(c.change);
-    const direction=c.change === null?'flat':c.change>0?'up':'down';
-    const profile=`https://www.saudiexchange.sa/wps/portal/saudiexchange/hidden/company-profile-main/?companySymbol=${c.ticker}`;
-    return `<tr onclick="selectCompanyInDisclosures('${c.ticker}')"><td><div class="company-name"><span>${escapeHTML(c.name)}</span><span class="ticker">${c.ticker}</span></div></td><td class="num">${fmtNum(c.q1_2025)}</td><td><span class="delta-cell ${c.q1_2026 > 0 ? 'up':'down'}">${fmtNum(c.q1_2026)}</span></td><td><span class="delta-cell ${direction}">${delta}</span></td><td style="color:var(--text-3);font-size:12px;">${result?.publishedAt ? fmtDate(result.publishedAt) : fmtDate(c.date)}</td><td><div class="row-links"><a href="${profile}" target="_blank" rel="noopener" class="row-link" title="Saudi Exchange" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-chart"/></svg></a></div></td></tr>`;
+  const tbody = document.getElementById('companies-tbody');
+  tbody.innerHTML = data.map(c => {
+    const record = companyRecord(c.ticker);
+    const statement = selectedInsurancePeriod === 'Q1' ? null : financialStatementFor(record, selectedInsurancePeriod);
+    const current = selectedInsurancePeriod === 'Q1' ? c.q1_2026 : netProfit(statement)?.value;
+    const comparable = selectedInsurancePeriod === 'Q1' ? c.q1_2025 : netProfit(statement)?.comparableValue;
+    const q1 = c.q1_2026;
+    const yoy = safePercent(current, comparable);
+    const qoq = selectedInsurancePeriod === 'Q2' ? safePercent(current, q1) : null;
+    const result = record.announcements.find(item => item.isFinancialResults);
+    const profile = `https://www.saudiexchange.sa/wps/portal/saudiexchange/hidden/company-profile-main/?companySymbol=${c.ticker}`;
+    const unavailable = selectedInsurancePeriod !== 'Q1' && !statement;
+    const values = unavailable ? `<td colspan="${selectedInsurancePeriod === 'Q2' ? 5 : 3}" class="num">${selectedInsurancePeriod} 2026 — لم ينشر بعد أو تعذر التحليل</td>` : `<td class="num">${fmtNum(comparable)}</td><td class="num">${fmtNum(current)}</td><td class="num">${yoy === null ? '—' : fmtPct(yoy)}</td>${selectedInsurancePeriod === 'Q2' ? `<td class="num">${fmtNum(q1)}</td><td class="num">${qoq === null ? '—' : fmtPct(qoq)}</td>` : ''}`;
+    return `<tr onclick="selectCompanyInDisclosures('${c.ticker}')"><td><div class="company-name"><span>${escapeHTML(c.name)}</span><span class="ticker">${c.ticker}</span></div></td>${values}<td style="color:var(--text-3);font-size:12px;">${statement?.lastUpdateDate ? fmtDate(statement.lastUpdateDate) : result?.publishedAt ? fmtDate(result.publishedAt) : fmtDate(c.date)}</td><td><div class="row-links"><a href="${profile}" target="_blank" rel="noopener" class="row-link" title="Saudi Exchange" onclick="event.stopPropagation()"><svg class="icon"><use href="#i-chart"/></svg></a></div></td></tr>`;
   }).join('');
 }
+
 function populateDisclosureSelect() {
   const sel=document.getElementById('disclosure-select');
   sel.innerHTML='<option value="">— اختر شركة —</option>'+COMPANIES.map(c=>`<option value="${c.ticker}">${escapeHTML(c.name)} (${c.ticker})</option>`).join('');
@@ -1185,11 +1225,19 @@ document.querySelectorAll('#panel-news .filter-btn').forEach(btn => {
   });
 });
 
-document.querySelectorAll('#panel-companies .filter-btn').forEach(btn => {
+document.querySelectorAll('#insurance-sort-selector .filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('#panel-companies .filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#insurance-sort-selector .filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentSort = btn.dataset.sort;
+    renderCompaniesTable();
+  });
+});
+document.querySelectorAll('#insurance-period-selector .filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#insurance-period-selector .filter-btn').forEach(button => button.classList.remove('active'));
+    btn.classList.add('active');
+    selectedInsurancePeriod = btn.dataset.period;
     renderCompaniesTable();
   });
 });
@@ -1206,54 +1254,7 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden) { loadNews(false); loadTadawulData(); }
 });
 
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const AUTO_SCROLL_SPEED = 18 / 1000;
-const MANUAL_SCROLL_DEBOUNCE = 500;
-let autoScrollFrame = null;
-let lastAutoFrame = null;
-let isUserScrolling = false;
-let userScrollTimer = null;
-let autoDirection = 1;
-let autoScrollUntil = 0;
 
-function pauseForManualScroll() {
-  isUserScrolling = true;
-  clearTimeout(userScrollTimer);
-  userScrollTimer = setTimeout(() => { isUserScrolling = false; }, MANUAL_SCROLL_DEBOUNCE);
-}
-
-// Passive listeners preserve native wheel, trackpad, touch, and keyboard scrolling.
-['wheel', 'touchstart', 'touchmove', 'keydown', 'pointerdown'].forEach(event => {
-  window.addEventListener(event, pauseForManualScroll, { passive: true });
-});
-window.addEventListener('scroll', () => {
-  if (performance.now() > autoScrollUntil) pauseForManualScroll();
-}, { passive: true });
-
-function runAutoScroll(now) {
-  const elapsed = Math.min(now - (lastAutoFrame ?? now), 100);
-  lastAutoFrame = now;
-  if (!reducedMotion && !isUserScrolling && document.visibilityState === 'visible') {
-    const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    if (maxY > 0) {
-      if (window.scrollY >= maxY - 1) autoDirection = -1;
-      if (window.scrollY <= 0) autoDirection = 1;
-      autoScrollUntil = now + 100;
-      window.scrollBy(0, autoDirection * AUTO_SCROLL_SPEED * elapsed);
-    }
-  }
-  autoScrollFrame = requestAnimationFrame(runAutoScroll);
-}
-if (!reducedMotion) autoScrollFrame = requestAnimationFrame(runAutoScroll);
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden && autoScrollFrame) {
-    cancelAnimationFrame(autoScrollFrame);
-    autoScrollFrame = null;
-    lastAutoFrame = null;
-  } else if (!document.hidden && !reducedMotion && !autoScrollFrame) {
-    autoScrollFrame = requestAnimationFrame(runAutoScroll);
-  }
-});
 </script>
 </body>
 </html>
