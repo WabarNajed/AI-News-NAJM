@@ -20,8 +20,9 @@ export function Briefing({
     fetchBrief,
     {
       revalidateOnFocus: false,
-      dedupingInterval: 900000,
-      refreshInterval: 900000,
+      dedupingInterval: 5000,
+      refreshInterval: 60000,
+      keepPreviousData: true,
       shouldRetryOnError: false,
     },
   );
@@ -37,7 +38,7 @@ export function Briefing({
           <h2 id={expanded ? "brief-detail-title" : "brief-title"}>
             الموجز التنفيذي
           </h2>
-          <span className="brief-tag">مدعوم بالذكاء الاصطناعي</span>
+          <span className="brief-tag">موجز آلي</span>
         </div>
         <span className="brief-time">
           {data?.generatedAt
@@ -47,14 +48,11 @@ export function Briefing({
       </div>
       {items.length ? (
         <div className="brief-grid">
-          {items.map((item) => (
+          {(expanded ? items : items.slice(0, 3)).map((item) => (
             <article className="brief-item" key={item.articleId}>
               <span className="eyebrow">المستجد</span>
               <h3>{item.fact}</h3>
-              <p>
-                <span className="analysis-label">تحليل محتمل</span>{" "}
-                {item.analysis}
-              </p>
+              <p>نُشر {dateLabel(item.publishedAt)}</p>
               <a href={item.url} target="_blank" rel="noopener noreferrer">
                 {item.source}
                 <ArrowUpLeft size={15} />
@@ -85,14 +83,15 @@ export function Briefing({
             </h3>
             <p>
               {data?.message ??
-                "لن نولّد استنتاجات من العناوين وحدها. تبقى الأخبار ومصادرها متاحة بصورة مستقلة."}
+                "نختار عناوين عربية منشورة خلال آخر ٣٠ يومًا، دون توليد تحليل أو إضافة وقائع."}
             </p>
           </div>
         </div>
       )}
       <div className="brief-foot">
-        الوقائع من المصادر المشار إليها؛ الدلالات التحليلية ليست معلومات عن
-        الوضع الداخلي لنجم ولا توصية استثمارية.
+        {data?.stale || error ? "تعذّر تحديث بعض المصادر؛ نعرض آخر موجز ناجح بوقت إعداده الأصلي. " : ""}
+        {items.length > 0 && data?.message ? `${data.message} ` : ""}
+        اختيار آلي بحسب الحداثة والصلة بالتأمين والتنظيم والخزينة، مع إزالة التكرار. العناوين من المصادر حرفيًا؛ دون تحليل مولّد أو تكلفة ذكاء اصطناعي.
       </div>
     </section>
   );

@@ -13,6 +13,14 @@ export const periods = [
     previous: "السنة المالية ٢٠٢٤",
   },
 ];
+export function availablePeriods(results: FinancialResult[]) {
+  if (!results.length) return periods;
+  const names: Record<string, string> = { Q1: "الربع الأول", Q2: "الربع الثاني", Q3: "الربع الثالث", Q4: "الربع الرابع", H1: "النصف الأول (تراكمي)", "9M": "التسعة أشهر (تراكمي)", FY: "السنة المالية" };
+  return [...new Set(results.map((r) => r.period))].filter((id) => /^20\d{2}-(Q[1-4]|H1|9M|FY)$/.test(id)).sort((a, b) => b.localeCompare(a)).map((id) => {
+    const [year, period] = id.split("-");
+    return { id, label: `${names[period]} ${year}`, previous: `${names[period]} ${Number(year) - 1}` };
+  });
+}
 export function change(
   current: number | null,
   previous: number | null,

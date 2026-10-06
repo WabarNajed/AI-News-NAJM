@@ -68,14 +68,47 @@ export type DashboardData = {
   refreshing: boolean;
   refreshDue: boolean;
 };
+export type Disclosure = {
+  id: string;
+  company: string;
+  title: string;
+  publishedAt: string;
+  type: string;
+  url: string;
+  source: string;
+  language: "ar" | "en";
+};
+export type MarketIndicator = {
+  id: "tasi" | "insurance" | "repo";
+  label: string;
+  value: number;
+  unit: string;
+  source: string;
+  url: string;
+  observedAt: string;
+  sourceDate: string;
+  delayed: boolean;
+  note: string;
+};
+export type MarketData = {
+  indicators: { id: MarketIndicator["id"]; data: MarketIndicator | null; lastSuccess: string | null; lastAttempt: string | null; error: string | null }[];
+  results: FinancialResult[];
+  disclosures: Disclosure[];
+  companyLastSuccess: string | null;
+  companyError: string | null;
+  limitations: string[];
+  refreshing: boolean;
+  refreshDue: boolean;
+};
 export type Brief = {
   status: "ready" | "insufficient" | "unavailable" | "pending";
   message?: string;
   generatedAt: string | null;
+  stale?: boolean;
   items: {
     articleId: string;
     fact: string;
-    analysis: string;
+    publishedAt: string | null;
     evidence: string;
     url: string;
     source: string;

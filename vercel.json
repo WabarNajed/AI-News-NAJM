@@ -3,5 +3,8 @@
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
   "outputDirectory": ".next",
-  "crons": [{ "path": "/api/news", "schedule": "0 3 * * *" }]
+  "crons": [
+    { "path": "/api/news", "schedule": "0 3 * * *" },
+    { "path": "/api/market", "schedule": "15 3 * * *" }
+  ]
 }

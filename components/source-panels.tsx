@@ -6,45 +6,37 @@ import {
   Link2,
 } from "lucide-react";
 import type { SourceHealth } from "@/lib/types";
-import { dateLabel } from "@/lib/format";
+import { dateLabel, numberLabel } from "@/lib/format";
+import { useMarketData } from "./use-market-data";
 export function MarketIndicators() {
+  const { data, error } = useMarketData();
+  const labels = { tasi: "مؤشر السوق الرئيسية (تاسي)", insurance: "مؤشر قطاع التأمين", repo: "معدل إعادة الشراء" };
   return (
     <section className="market-strip" aria-label="المؤشرات السوقية">
       <div className="market-intro">
         <span className="eyebrow">نبض السوق</span>
         <strong>بيانات قابلة للتتبّع</strong>
-        <span>لا تُعرض قيم دون مصدر</span>
+        <span>أسعار متأخرة · مصادر عامة</span>
       </div>
-      {[
-        [
-          "مؤشر السوق الرئيسية",
-          "تداول السعودية",
-          "https://www.saudiexchange.sa/",
-        ],
-        [
-          "مؤشر قطاع التأمين",
-          "تداول السعودية",
-          "https://www.saudiexchange.sa/",
-        ],
-        [
-          "معدل إعادة الشراء",
-          "البنك المركزي السعودي",
-          "https://www.sama.gov.sa/",
-        ],
-      ].map(([label, source, url]) => (
-        <div className="market-item" key={label}>
-          <span>{label}</span>
-          <div>
-            <strong aria-label="غير متاح">—</strong>
-            <span className="neutral-tag">غير مربوط</span>
+      {(["tasi", "insurance", "repo"] as const).map((id) => {
+        const record = data?.indicators.find((item) => item.id === id);
+        const item = record?.data;
+        return (
+          <div className="market-item" key={id} data-market-indicator={id}>
+            <span>{labels[id]}</span>
+            <div>
+              <strong><bdi>{item ? numberLabel(item.value) : "—"}{item?.unit === "٪" ? "٪" : ""}</bdi></strong>
+              <span className="neutral-tag">{item?.delayed ? "متأخر ١٥ دقيقة" : item ? "معدل منشور" : "قيد التحقق"}</span>
+            </div>
+            {item && <>
+              <a href={item.url} target="_blank" rel="noopener noreferrer">{item.source}<ArrowUpLeft size={13} /></a>
+              <small>تاريخ المصدر: <bdi>{item.sourceDate}</bdi></small>
+              <small>آخر رصد ناجح: {dateLabel(item.observedAt, true)}</small>
+            </>}
+            {(record?.error || error) && <small role="status">تعذّر التحديث؛ {item ? "نعرض آخر رصد ناجح." : "لا توجد قيمة موثقة بعد."}</small>}
           </div>
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            {source}
-            <ArrowUpLeft size={13} />
-          </a>
-          <small>تاريخ الرصد: غير متاح</small>
-        </div>
-      ))}
+        );
+      })}
     </section>
   );
 }
