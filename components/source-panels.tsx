@@ -161,6 +161,8 @@ export function SourceDirectory({ sources }: { sources: SourceHealth[] }) {
                   {s.error && <p className="source-error">{s.error}</p>}
                   {s.connector && (
                     <small>
+                      الأخبار المحفوظة: {new Intl.NumberFormat("ar-SA").format(s.count)}
+                      <br />
                       آخر نجاح:{" "}
                       {s.lastSuccess
                         ? dateLabel(s.lastSuccess, true)
