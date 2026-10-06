@@ -277,6 +277,8 @@ export function Dashboard() {
             error={marketError ? "تعذّر الاتصال" : market?.companyError}
             limitations={market?.limitations ?? []}
             loading={marketLoading || !!market?.refreshing}
+                companyCoverage={market?.companyCoverage ?? []}
+                directoryCheckedAt={market?.directoryCheckedAt ?? null}
           />
         ) : tab === "disclosures" ? (
           <DisclosuresPanel
@@ -284,6 +286,8 @@ export function Dashboard() {
             lastSuccess={market?.companyLastSuccess ?? null}
             error={marketError ? "تعذّر الاتصال" : market?.companyError}
             loading={marketLoading || !!market?.refreshing}
+                companyCoverage={market?.companyCoverage ?? []}
+                directoryCheckedAt={market?.directoryCheckedAt ?? null}
           />
         ) : tab === "sources" ? (
           <SourceDirectory sources={health} />

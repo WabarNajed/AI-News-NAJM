@@ -90,7 +90,20 @@ export type MarketIndicator = {
   delayed: boolean;
   note: string;
 };
+export type CompanyCoverage = {
+  symbol: string;
+  company: string;
+  sourceUrl: string;
+  periods: string[];
+  results: number;
+  disclosures: number;
+  lastSuccess: string | null;
+  error: string | null;
+  missingComparatives: number;
+};
 export type MarketData = {
+  companyCoverage: CompanyCoverage[];
+  directoryCheckedAt: string | null;
   indicators: { id: MarketIndicator["id"]; data: MarketIndicator | null; lastSuccess: string | null; lastAttempt: string | null; error: string | null }[];
   results: FinancialResult[];
   disclosures: Disclosure[];

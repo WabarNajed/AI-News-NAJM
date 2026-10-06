@@ -6,7 +6,7 @@ import {
   Link2,
 } from "lucide-react";
 import type { SourceHealth } from "@/lib/types";
-import { dateLabel, numberLabel } from "@/lib/format";
+import { dateLabel, numberLabel, westernDigits, indicatorNumber, indicatorDate } from "@/lib/format";
 import { useMarketData } from "./use-market-data";
 export function MarketIndicators() {
   const { data, error } = useMarketData();
@@ -25,13 +25,13 @@ export function MarketIndicators() {
           <div className="market-item" key={id} data-market-indicator={id}>
             <span>{labels[id]}</span>
             <div>
-              <strong><bdi>{item ? numberLabel(item.value) : "—"}{item?.unit === "٪" ? "٪" : ""}</bdi></strong>
-              <span className="neutral-tag">{item?.delayed ? "متأخر ١٥ دقيقة" : item ? "معدل منشور" : "قيد التحقق"}</span>
+              <strong><bdi dir="ltr">{item ? indicatorNumber(item.value) : "—"}{item?.unit === "٪" ? "%" : ""}</bdi></strong>
+              <span className="neutral-tag">{item?.delayed ? "متأخر 15 دقيقة" : item ? "معدل منشور" : "قيد التحقق"}</span>
             </div>
             {item && <>
               <a href={item.url} target="_blank" rel="noopener noreferrer">{item.source}<ArrowUpLeft size={13} /></a>
-              <small>تاريخ المصدر: <bdi>{item.sourceDate}</bdi></small>
-              <small>آخر رصد ناجح: {dateLabel(item.observedAt, true)}</small>
+              <small>تاريخ المصدر: <bdi dir={/[\u0600-\u06ff]/.test(item.sourceDate) ? "rtl" : "ltr"}>{westernDigits(item.sourceDate)}</bdi></small>
+              <small>آخر رصد ناجح: <bdi dir="rtl">{indicatorDate(item.observedAt)}</bdi></small>
             </>}
             {(record?.error || error) && <small role="status">تعذّر التحديث؛ {item ? "نعرض آخر رصد ناجح." : "لا توجد قيمة موثقة بعد."}</small>}
           </div>
