@@ -8,11 +8,14 @@ import {
   selectResults,
 } from "@/lib/financial";
 import { dateLabel, numberLabel } from "@/lib/format";
-import type { FinancialResult } from "@/lib/types";
+import type { FinancialResult, CompanyCoverage as Coverage } from "@/lib/types";
+import { CompanyCoverage } from "./company-coverage";
 export function FinancialPanel({
-  results, lastSuccess, error, limitations, loading,
+  results, lastSuccess, error, limitations, loading, companyCoverage, directoryCheckedAt,
 }: {
   results: FinancialResult[];
+  companyCoverage: Coverage[];
+  directoryCheckedAt: string | null;
   lastSuccess: string | null;
   error?: string | null;
   limitations: string[];
@@ -41,6 +44,7 @@ export function FinancialPanel({
       <details className="methodology">
         <summary>تغطية المصادر وحدود البيانات</summary>
         {limitations.map((text) => <p key={text}>{text}</p>)}
+        <CompanyCoverage companies={companyCoverage} period={period} checkedAt={directoryCheckedAt} />
       </details>
       <div className="filter-toolbar">
         <label>
@@ -143,7 +147,7 @@ export function FinancialPanel({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        الإفصاح الأصلي
+                        التقرير المصدر
                         <ArrowUpLeft size={14} />
                       </a>
                     ) : (

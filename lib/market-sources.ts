@@ -17,13 +17,13 @@ export function numeric(value: string | undefined): number | null {
   const result = Number(normalized);
   return Number.isFinite(result) ? result : null;
 }
-async function request(url: string) {
+export async function request(url: string, maxBytes = 3_000_000, timeoutMs = 10000) {
   const response = await fetch(url, {
     headers: { "User-Agent": `${agent}/1.0`, Accept: "text/html,application/json,text/plain" },
-    redirect: "error", cache: "no-store", signal: AbortSignal.timeout(10000),
+    redirect: "error", cache: "no-store", signal: AbortSignal.timeout(timeoutMs),
   });
   if (!response.ok) throw new Error(`المصدر أعاد HTTP ${response.status}`);
-  if (Number(response.headers.get("content-length")) > 3_000_000) throw new Error("استجابة أكبر من الحد المسموح");
+  if (Number(response.headers.get("content-length")) > maxBytes) throw new Error("استجابة أكبر من الحد المسموح");
   const reader = response.body?.getReader();
   if (!reader) throw new Error("استجابة فارغة");
   let size = 0;
@@ -32,7 +32,7 @@ async function request(url: string) {
     const { value, done } = await reader.read();
     if (done) break;
     size += value.length;
-    if (size > 3_000_000) { await reader.cancel(); throw new Error("استجابة أكبر من الحد المسموح"); }
+    if (size > maxBytes) { await reader.cancel(); throw new Error("استجابة أكبر من الحد المسموح"); }
     chunks.push(value);
   }
   return Buffer.concat(chunks).toString("utf8");
