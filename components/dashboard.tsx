@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import {
   RefreshCw,
   Maximize,
@@ -23,6 +23,8 @@ import { useAutoScroll } from "./use-auto-scroll";
 import { Briefing } from "./briefing";
 import { NewsFeed } from "./news-feed";
 import { FinancialPanel } from "./financial-panel";
+import { DisclosuresPanel } from "./disclosures-panel";
+import { useMarketData } from "./use-market-data";
 import {
   MarketIndicators,
   SourceSidebar,
@@ -37,6 +39,8 @@ const tabs = [
 ];
 const revision = (a: Article[]) => a.map((i) => i.id + i.updatedAt + (i.related ?? []).map((r) => r.id + r.updatedAt).join(",")).join("|");
 export function Dashboard() {
+  const { data: market, error: marketError, isLoading: marketLoading, mutate: mutateMarket } = useMarketData();
+  const { mutate: mutateShared } = useSWRConfig();
   const [tab, setTab] = useState("news"),
     [visible, setVisible] = useState<Article[] | null>(null),
     [pending, setPending] = useState<Article[] | null>(null),
@@ -84,9 +88,12 @@ export function Dashboard() {
   async function refresh() {
     setRefreshing(true);
     try {
-      const response = await fetch("/api/news", { method: "POST" });
-      if (!response.ok) throw new Error("refresh");
-      await mutate();
+      const responses = await Promise.all([
+        fetch("/api/news", { method: "POST" }),
+        fetch("/api/market", { method: "POST" }),
+      ]);
+      await Promise.all([mutate(), mutateMarket(), mutateShared("/api/brief")]);
+      if (responses.some((response) => !response.ok)) throw new Error("refresh");
       setNotice("");
     } catch {
       setNotice("تعذّر التحديث؛ نحتفظ بآخر أخبار ناجحة ووقت جلبها الأصلي.");
@@ -154,8 +161,8 @@ export function Dashboard() {
             </div>
             <button
               className="icon-button"
-              title="تحديث الأخبار"
-              aria-label="تحديث الأخبار"
+              title="تحديث البيانات"
+              aria-label="تحديث البيانات"
               disabled={isValidating || refreshing || data?.refreshing}
               onClick={() => void refresh()}
             >
@@ -263,11 +270,20 @@ export function Dashboard() {
               onDirectory={() => setTab("sources")}
             />
           </div>
-        ) : tab === "financial" || tab === "disclosures" ? (
+        ) : tab === "financial" ? (
           <FinancialPanel
-            results={data?.results ?? []}
-            articles={articles}
-            disclosures={tab === "disclosures"}
+            results={market?.results ?? []}
+            lastSuccess={market?.companyLastSuccess ?? null}
+            error={marketError ? "تعذّر الاتصال" : market?.companyError}
+            limitations={market?.limitations ?? []}
+            loading={marketLoading || !!market?.refreshing}
+          />
+        ) : tab === "disclosures" ? (
+          <DisclosuresPanel
+            disclosures={market?.disclosures ?? []}
+            lastSuccess={market?.companyLastSuccess ?? null}
+            error={marketError ? "تعذّر الاتصال" : market?.companyError}
+            loading={marketLoading || !!market?.refreshing}
           />
         ) : tab === "sources" ? (
           <SourceDirectory sources={health} />
@@ -276,9 +292,7 @@ export function Dashboard() {
             <Briefing ready={!!data?.lastSuccess} expanded />
             <div className="methodology">
               <p>
-                تُنشأ الدلالات المحتملة آليًا من نصوص المصادر المرتبطة فقط. راجع
-                الاقتباس والإعلان الأصلي قبل اتخاذ قرار. لا يتضمن الموجز بيانات
-                داخلية عن نجم.
+                نختار حتى خمسة عناوين عربية حديثة، بحسب الصلة بالتأمين والتنظيم والخزينة، بعد إزالة التكرار. تُنقل العناوين حرفيًا مع روابطها وتواريخها، دون نموذج ذكاء اصطناعي أو استنتاجات مولّدة.
               </p>
             </div>
           </div>

@@ -1730,7 +1730,14 @@ td small {
   overflow: hidden;
 }
 .market-item small {
-  display: none;
+  display: block;
+  line-height: 1.5;
+}
+details.methodology {
+  display: block;
+}
+details.methodology summary {
+  cursor: pointer;
 }
 .market-item a {
   margin-top: 2px;

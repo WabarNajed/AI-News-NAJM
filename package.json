@@ -11,7 +11,6 @@
     "test": "tsx --test tests/*.test.ts"
   },
   "dependencies": {
-    "ai": "^7.0.128",
     "cheerio": "^1.2.0",
     "drizzle-orm": "^0.45.3",
     "lucide-react": "^1.52.0",

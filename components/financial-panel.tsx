@@ -4,23 +4,25 @@ import { ArrowUpLeft, FileSearch, Info } from "lucide-react";
 import {
   change,
   financialStats,
-  periods,
+  availablePeriods,
   selectResults,
 } from "@/lib/financial";
 import { dateLabel, numberLabel } from "@/lib/format";
-import type { Article, FinancialResult } from "@/lib/types";
+import type { FinancialResult } from "@/lib/types";
 export function FinancialPanel({
-  results,
-  disclosures = false,
-  articles,
+  results, lastSuccess, error, limitations, loading,
 }: {
   results: FinancialResult[];
-  disclosures?: boolean;
-  articles: Article[];
+  lastSuccess: string | null;
+  error?: string | null;
+  limitations: string[];
+  loading: boolean;
 }) {
-  const [period, setPeriod] = useState("2026-Q1"),
+  const [selectedPeriod, setPeriod] = useState(""),
     [sort, setSort] = useState("change-desc"),
     [company, setCompany] = useState("all");
+  const periods = availablePeriods(results);
+  const period = selectedPeriod || periods[0].id;
   const selection = periods.find((p) => p.id === period)!;
   const rows = selectResults(results, period, sort).filter(
     (r) => company === "all" || r.company === company,
@@ -30,27 +32,20 @@ export function FinancialPanel({
     <section className="panel financial-panel">
       <div className="section-heading">
         <div>
-          <span className="eyebrow">
-            {disclosures ? "إعلانات السوق" : "أداء القطاع"}
-          </span>
-          <h2>
-            {disclosures ? "إفصاحات الشركات" : "النتائج المالية لشركات التأمين"}
-          </h2>
+          <span className="eyebrow">أداء القطاع · تغطية محدودة معلنة</span>
+          <h2>النتائج المالية لشركات التأمين</h2>
         </div>
-        <a
-          className="text-link"
-          href="https://www.saudiexchange.sa/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          دليل تداول السعودية
-          <ArrowUpLeft size={16} />
-        </a>
+        <span className="subtle">{lastSuccess ? `آخر جلب ناجح: ${dateLabel(lastSuccess, true)}` : "بانتظار أول جلب موثق"}</span>
       </div>
+      {error && <p role="status">تعذّر تحديث بعض البيانات؛ نحتفظ بآخر نتائج ناجحة وتاريخها.</p>}
+      <details className="methodology">
+        <summary>تغطية المصادر وحدود البيانات</summary>
+        {limitations.map((text) => <p key={text}>{text}</p>)}
+      </details>
       <div className="filter-toolbar">
         <label>
           الفترة المالية
-          <select value={period} onChange={(e) => setPeriod(e.target.value)}>
+          <select value={period} onChange={(e) => { setPeriod(e.target.value); setCompany("all"); }}>
             {periods.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.label}
@@ -70,7 +65,7 @@ export function FinancialPanel({
           الشركة
           <select value={company} onChange={(e) => setCompany(e.target.value)}>
             <option value="all">جميع الشركات المتاحة</option>
-            {[...new Set(results.map((r) => r.company))].map((c) => (
+            {[...new Set(results.filter((r) => r.period === period).map((r) => r.company))].map((c) => (
               <option key={c}>{c}</option>
             ))}
           </select>
@@ -91,7 +86,7 @@ export function FinancialPanel({
       </div>
       <div className="table-caption">
         <h3>{selection.label}</h3>
-        <span>مقارنة بالفترة المماثلة · العملة والوحدة حسب الإفصاح</span>
+        <span>مقارنة بالفترة المماثلة · جميع القيم بمليون ريال سعودي</span>
       </div>
       <div
         className="table-scroll"
@@ -165,20 +160,8 @@ export function FinancialPanel({
       {!rows.length && (
         <div className="empty-state">
           <FileSearch size={34} />
-          <h3>لا توجد نتائج موثقة لهذه الفترة</h3>
-          <p>
-            حُجبت الأرقام السابقة لغياب روابط الإفصاحات المؤيدة لها. عدم توفر
-            البيانات هنا لا يعني أن الشركات لم تنشر نتائجها.
-          </p>
-          <a
-            className="button"
-            href="https://www.saudiexchange.sa/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            الانتقال إلى مصدر الإفصاحات
-            <ArrowUpLeft size={16} />
-          </a>
+          <h3>{loading ? "جارٍ جلب النتائج الرسمية" : "لا توجد نتائج موثقة لهذه الفترة ضمن التغطية الحالية"}</h3>
+          <p>عدم توفر البيانات هنا لا يعني أن الشركات لم تنشر نتائجها. القيم المفقودة ليست صفرًا.</p>
         </div>
       )}
       <div className="methodology">
@@ -189,30 +172,6 @@ export function FinancialPanel({
           الثاني مستقل عن النصف الأول التراكمي؛ القيم المفقودة ليست صفرًا.
         </p>
       </div>
-      {disclosures && (
-        <div className="disclosure-list">
-          <h3>إعلانات تنظيمية مرتبطة بالشركات · ليست قوائم مالية</h3>
-          {articles
-            .filter((a) => /شركة|شركات/.test(a.title))
-            .slice(0, 8)
-            .map((a) => (
-              <a
-                key={a.id}
-                href={a.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span>
-                  {a.title}
-                  <small>
-                    {a.source} · {dateLabel(a.publishedAt)}
-                  </small>
-                </span>
-                <ArrowUpLeft size={18} />
-              </a>
-            ))}
-        </div>
-      )}
     </section>
   );
 }
