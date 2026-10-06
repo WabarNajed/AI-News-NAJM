@@ -21,14 +21,19 @@ export type Article = {
   entity: string;
   kind: "announcement" | "report" | "forecast" | "commentary";
   dateOnly: boolean;
-  related?: { source: string; url: string }[];
+  language?: "ar" | "en";
+  related?: Omit<Article, "related">[];
 };
 export type Source = {
   id: string;
   name: string;
   url: string;
   type: "official" | "media" | "social";
-  connector?: "ia" | "cma";
+  connector?: "ia" | "cma" | "rss" | "news-sitemap";
+  feedUrl?: string;
+  language?: "ar" | "en";
+  newsPath?: string;
+  category?: Category;
   note: string;
 };
 export type SourceHealth = Source & {
@@ -60,6 +65,8 @@ export type DashboardData = {
   stale: boolean;
   refreshMinutes: number;
   storageError: boolean;
+  refreshing: boolean;
+  refreshDue: boolean;
 };
 export type Brief = {
   status: "ready" | "insufficient" | "unavailable" | "pending";

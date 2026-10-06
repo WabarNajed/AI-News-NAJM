@@ -47,6 +47,10 @@ export async function claim(key: string, intervalMs: number) {
     .returning({ key: cache.key });
   return rows.length > 0;
 }
+export async function markAttempt(key: string) {
+  const attemptedAt = new Date();
+  await db.insert(cache).values({ key, payload: [], attemptedAt }).onConflictDoUpdate({ target: cache.key, set: { attemptedAt } });
+}
 export async function writeCache(key: string, payload: unknown) {
   const now = new Date();
   await db

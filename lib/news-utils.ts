@@ -26,6 +26,13 @@ export function safeUrl(value: string, base?: string) {
   }
 }
 export function parsePublicationDate(value: string): string | null {
+  const original = plain(value);
+  if (/^\d{4}-\d{2}-\d{2}(?:T|$)/.test(original) || /\d{1,2}\s+[A-Za-z]{3}\s+\d{4}/.test(original)) {
+    const date = new Date(original);
+    if (!Number.isFinite(date.getTime()) || date.getTime() > Date.now() + 86400000) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(original)) return date.toISOString().slice(0, 10) === original ? original : null;
+    return date.toISOString();
+  }
   const months = [
     "يناير",
     "فبراير",
@@ -60,11 +67,47 @@ export function parsePublicationDate(value: string): string | null {
     return null;
   return iso;
 }
+const economicTopic = /نجم|تأمين|تأميني|اقتصاد|استثمار|سيولة|خزينة|فائدة|تضخم|بنك|بنوك|مصرف|نقد|أسهم|سوق|أسواق|تداول|نفط|طاقة|تمويل|دين|ديون|سندات|صكوك|تجارة|نمو|مالي|عقار|insurance|econom|invest|liquidity|treasury|interest rate|inflation|bank|monetary|stock|market|oil|energy|financ|mortgage|bond|trade/i;
+function parseStructuredFeed(xml: string, source: Source, now: string): Article[] {
+  const $ = load(xml, { xml: true });
+  const sitemap = source.connector === "news-sitemap";
+  const root = sitemap ? $("urlset") : $("rss,feed");
+  if (!root.length) throw new Error("استجابة غير صالحة؛ لم تصل تغذية أخبار معروفة.");
+  const items = $(sitemap ? "url" : "item,entry").toArray();
+  if (!items.length) throw new Error("التغذية فارغة؛ نحتفظ بآخر جلب ناجح.");
+  const result: Article[] = [];
+  let valid = 0;
+  for (const item of items) {
+    const node = $(item);
+    const title = plain(node.find(sitemap ? "news\\:title" : "title").first().text()).slice(0, 800);
+    const url = safeUrl(node.find(sitemap ? "loc" : "link").first().attr("href") || node.find(sitemap ? "loc" : "link").first().text(), source.feedUrl);
+    if (!url || new URL(url).hostname !== new URL(source.url).hostname || title.length < 10) continue;
+    valid++;
+    const path = decodeURI(new URL(url).pathname);
+    if (!source.category && (source.newsPath ? !path.startsWith(source.newsPath) : !economicTopic.test(`${title} ${path} ${node.find("category").text()}`))) continue;
+    const date = node.find(sitemap ? "news\\:publication_date" : "pubDate,published,dc\\:date").first().text();
+    const publishedAt = parsePublicationDate(date);
+    const excerpt = sitemap ? "" : plain(node.find("description,summary").first().text()).slice(0, 650);
+    result.push({
+      id: createHash("sha256").update(url).digest("hex").slice(0, 24),
+      title, url, sourceId: source.id, source: source.name,
+      summary: excerpt || null, content: excerpt || null,
+      publishedAt, retrievedAt: now, updatedAt: now,
+      dateOnly: !!publishedAt && publishedAt.length === 10,
+      language: source.language ?? "ar",
+      category: /نجم/.test(title) ? "najm" : source.category ?? (/تأمين|insurance/i.test(title) ? "sector" : source.language === "en" ? "global" : "econ"),
+      entity: source.name, kind: source.type === "official" ? "announcement" : "report",
+    });
+  }
+  if (!valid) throw new Error("تعذّر استخراج بيانات أخبار صالحة؛ نحتفظ بآخر جلب ناجح.");
+  return dedupe(result).sort((a,b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? "")).slice(0, 80);
+}
 export function parseSource(
   html: string,
   source: Source,
   now = new Date().toISOString(),
 ): Article[] {
+  if (source.connector === "rss" || source.connector === "news-sitemap") return parseStructuredFeed(html, source, now);
   const $ = load(html);
   const cards =
     source.connector === "ia"
@@ -136,13 +179,12 @@ export function dedupe(articles: Article[]): Article[] {
       .toLowerCase();
     const existing = titles.get(key);
     if (existing) {
-      existing.related = [
-        ...(existing.related ?? []),
-        { source: article.source, url },
-      ];
+      const { related, ...attribution } = article;
+      existing.related = [...(existing.related ?? []), { ...attribution, url }, ...(related ?? [])]
+        .filter((item, index, all) => item.url !== existing.url && all.findIndex((r) => r.url === item.url) === index);
       continue;
     }
-    const item = { ...article, url };
+    const item = { ...article, url, ...(article.related ? { related: [...article.related] } : {}) };
     titles.set(key, item);
     result.push(item);
   }
@@ -153,6 +195,7 @@ export function mergeArticles(old: Article[], current: Article[]) {
   return dedupe([
     ...current.map((a) => {
       const prev = previous.get(a.id);
+      if (prev && prev.title === a.title && !a.summary && prev.summary) a = { ...a, summary: prev.summary, content: prev.content };
       return prev && prev.title === a.title && prev.summary === a.summary && prev.content === a.content && prev.publishedAt === a.publishedAt
         ? { ...a, updatedAt: prev.updatedAt }
         : a;

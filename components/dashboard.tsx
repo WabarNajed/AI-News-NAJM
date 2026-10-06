@@ -35,12 +35,13 @@ const tabs = [
   { id: "sources", label: "المصادر والمنصات", icon: Globe2 },
   { id: "brief", label: "الملخص التنفيذي", icon: Sparkles },
 ];
-const revision = (a: Article[]) => a.map((i) => i.id + i.updatedAt).join("|");
+const revision = (a: Article[]) => a.map((i) => i.id + i.updatedAt + (i.related ?? []).map((r) => r.id + r.updatedAt).join(",")).join("|");
 export function Dashboard() {
   const [tab, setTab] = useState("news"),
     [visible, setVisible] = useState<Article[] | null>(null),
     [pending, setPending] = useState<Article[] | null>(null),
-    [notice, setNotice] = useState("");
+    [notice, setNotice] = useState(""),
+    [refreshing, setRefreshing] = useState(false);
   const current = useRef<Article[] | null>(null);
   const { data, error, isLoading, isValidating, mutate } =
     useSWR<DashboardData>(
@@ -52,13 +53,14 @@ export function Dashboard() {
       },
       {
         refreshInterval: (latest) =>
-          latest && !latest.lastAttempt ? 5000 : REFRESH_MINUTES * 60000,
+          latest?.refreshing ? 3000 : REFRESH_MINUTES * 60000,
         revalidateOnFocus: false,
         shouldRetryOnError: false,
         onSuccess: (incoming) => {
-          if (current.current === null) {
+          if (current.current === null || current.current.length === 0) {
             current.current = incoming.articles;
             setVisible(incoming.articles);
+            setPending(null);
           } else if (
             revision(incoming.articles) !== revision(current.current)
           ) {
@@ -67,7 +69,7 @@ export function Dashboard() {
         },
       },
     );
-  const auto = useAutoScroll();
+  const auto = useAutoScroll(tab !== "news" || !!visible?.length, tab);
   const health =
     data?.sources ??
     sources.map((s) => ({
@@ -79,6 +81,17 @@ export function Dashboard() {
       count: 0,
     }));
   const articles = visible ?? [];
+  async function refresh() {
+    setRefreshing(true);
+    try {
+      const response = await fetch("/api/news", { method: "POST" });
+      if (!response.ok) throw new Error("refresh");
+      await mutate();
+      setNotice("");
+    } catch {
+      setNotice("تعذّر التحديث؛ نحتفظ بآخر أخبار ناجحة ووقت جلبها الأصلي.");
+    } finally { setRefreshing(false); }
+  }
   function acceptUpdates() {
     if (!pending) return;
     const anchor = [
@@ -143,10 +156,10 @@ export function Dashboard() {
               className="icon-button"
               title="تحديث الأخبار"
               aria-label="تحديث الأخبار"
-              disabled={isValidating}
-              onClick={() => void mutate()}
+              disabled={isValidating || refreshing || data?.refreshing}
+              onClick={() => void refresh()}
             >
-              <RefreshCw size={18} className={isValidating ? "spinning" : ""} />
+              <RefreshCw size={18} className={isValidating || refreshing || data?.refreshing ? "spinning" : ""} />
             </button>
             <button
               className="icon-button"
@@ -210,10 +223,12 @@ export function Dashboard() {
                 ? "نعرض آخر بيانات متاحة."
                 : "أعد المحاولة باستخدام زر التحديث."}
             </span>
+          ) : data?.refreshing || refreshing ? (
+            <span><RefreshCw size={16} className="spinning" /> جارٍ تحديث المصادر؛ تبقى الأخبار المعروضة في موضعها.</span>
           ) : data?.stale ? (
             <span>
               <CircleAlert size={16} />
-              بعض المصادر متعذرة أو البيانات مخزنة؛ راجع حالة المصادر.
+              تعذّر تحديث بعض المصادر؛ نعرض آخر أخبار ناجحة. راجع حالة المصادر وأوقات الجلب.
             </span>
           ) : (
             <span>
@@ -240,7 +255,7 @@ export function Dashboard() {
             <NewsFeed
               articles={articles}
               sources={health}
-              loading={isLoading}
+              loading={isLoading || !!data?.refreshing}
               unavailable={!!error || !!data?.stale}
             />
             <SourceSidebar
@@ -297,8 +312,8 @@ export function Dashboard() {
             </select>
             <button
               className="play-button"
-              disabled={auto.reduced}
               aria-pressed={auto.enabled}
+              aria-label={auto.enabled ? "إيقاف التمرير التلقائي" : "تشغيل التمرير التلقائي"}
               onClick={(e) => {
                 auto.toggle();
                 e.currentTarget.blur();

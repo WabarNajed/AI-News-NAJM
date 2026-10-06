@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { categories, type Article, type SourceHealth } from "@/lib/types";
 import { dateLabel, numberLabel } from "@/lib/format";
+import { DEFAULT_NEWS_DAYS } from "@/lib/sources";
+import { forPublisher, matchesNews } from "@/lib/news-filter";
 export function NewsFeed({
   articles,
   sources,
@@ -25,24 +27,13 @@ export function NewsFeed({
   const [query, setQuery] = useState(""),
     [category, setCategory] = useState("all"),
     [source, setSource] = useState("all"),
-    [days, setDays] = useState("all"),
+    [days, setDays] = useState(DEFAULT_NEWS_DAYS),
     [order, setOrder] = useState("recent");
   const filtered = useMemo(
     () =>
       articles
-        .filter(
-          (a) =>
-            (!query ||
-              `${a.title} ${a.summary ?? ""} ${a.entity}`.includes(
-                query.trim(),
-              )) &&
-            (category === "all" || a.category === category) &&
-            (source === "all" || a.sourceId === source) &&
-            (days === "all" ||
-              (a.publishedAt &&
-                Date.parse(a.publishedAt) >=
-                  Date.now() - Number(days) * 86400000)),
-        )
+        .map((article) => forPublisher(article, source))
+        .filter((article): article is Article => !!article && matchesNews(article, query, category, days))
         .sort((a, b) =>
           order === "relevant"
             ? Number(b.category === "najm") * 10 +
@@ -54,13 +45,18 @@ export function NewsFeed({
         ),
     [articles, query, category, source, days, order],
   );
+  const sourceCounts = useMemo(() => Object.fromEntries(["all", ...sources.filter((s) => s.connector).map((s) => s.id)].map((id) => [id, articles.reduce((count, article) => {
+    const attributed = forPublisher(article, id);
+    return count + Number(!!attributed && matchesNews(attributed, query, category, days));
+  }, 0)])), [articles, sources, query, category, days]);
+  const selectedSource = sources.find((s) => s.id === source);
   const active =
-    !!query || category !== "all" || source !== "all" || days !== "all";
+    !!query || category !== "all" || source !== "all" || days !== DEFAULT_NEWS_DAYS;
   function reset() {
     setQuery("");
     setCategory("all");
     setSource("all");
-    setDays("all");
+    setDays(DEFAULT_NEWS_DAYS);
   }
   return (
     <section className="panel news-panel" aria-labelledby="news-heading">
@@ -99,14 +95,12 @@ export function NewsFeed({
             value={source}
             onChange={(e) => setSource(e.target.value)}
           >
-            <option value="all">كل المصادر</option>
-            {sources
-              .filter((s) => s.connector)
-              .map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
+            <option value="all">كل المصادر · {numberLabel(sourceCounts.all ?? 0)}</option>
+            {sources.filter((s) => s.connector).map((s) => (
+              <option key={s.id} value={s.id} disabled={!s.lastSuccess && s.id !== source}>
+                {s.name} · {numberLabel(sourceCounts[s.id] ?? 0)}{s.status === "unavailable" ? " · غير متاح حاليًا" : sourceCounts[s.id] === 0 ? " · متصل بلا مطابقات" : ""}
+              </option>
+            ))}
           </select>
         </label>
         <label className="compact-select">
@@ -150,10 +144,13 @@ export function NewsFeed({
           </button>
         </div>
       )}
+      {selectedSource?.status === "unavailable" && (
+        <p className="active-filters" role="status">المصدر متعذر مؤقتًا؛ {selectedSource.lastSuccess ? "نعرض آخر أخبار محفوظة منه." : "لم يُسجّل جلب ناجح بعد."}</p>
+      )}
       {loading && !articles.length ? (
         <div className="empty-state" role="status">
           <span className="spinner" />
-          <h3>نجلب الأخبار من المصادر الرسمية</h3>
+          <h3>نجلب الأخبار من الجهات الرسمية والمنصات الإخبارية</h3>
           <p>يُتحقّق من كل مصدر بصورة مستقلة.</p>
         </div>
       ) : filtered.length ? (
@@ -177,7 +174,8 @@ export function NewsFeed({
               </div>
               <div className="article-title-row">
                 <h3>
-                  <a href={a.url} target="_blank" rel="noopener noreferrer">
+                  {a.language === "en" && <small className="publisher">عنوان أصلي بالإنجليزية · غير مترجم</small>}
+                  <a href={a.url} target="_blank" rel="noopener noreferrer" lang={a.language ?? "ar"} dir={a.language === "en" ? "ltr" : "rtl"}>
                     {a.title}
                   </a>
                 </h3>
@@ -193,7 +191,7 @@ export function NewsFeed({
               </div>
               <p className="article-summary">
                 {a.summary ??
-                  "المتاح هو عنوان الإعلان فقط؛ لا يتوفر نص كافٍ لعرض ملخص."}
+                  "المتاح هو عنوان الخبر فقط؛ لا يتوفر نص كافٍ لعرض ملخص."}
               </p>
               <div className="article-bottom">
                 <span>
@@ -260,7 +258,7 @@ export function NewsFeed({
       <div className="panel-footer">
         <ShieldCheck size={15} />
         <span>
-          روابط أصلية · تواريخ نشر منفصلة عن أوقات الجلب · بتوقيت الرياض
+          روابط أصلية · بتوقيت الرياض · الأخبار دون تاريخ نشر تبقى ظاهرة ولا يُستبدل تاريخها بوقت الجلب
         </span>
       </div>
     </section>
